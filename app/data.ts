@@ -2,6 +2,7 @@ export type ClaimStatus = "unreviewed" | "under_review" | "corroborated" | "cont
 
 export const sources = [
   { id: "samdish", publisher: "Unfiltered by Samdish", type: "Primary video", url: "https://www.youtube.com/watch?v=6MTXCAaOy3o", title: "Good Afternoon India — Dekh Lo Humaara 'Naya Bharat'", note: "56-minute ground report published July 20, 2026. A submitter-provided working copy was used for private frame review; publication rights remain pending and the original is access-controlled." },
+  { id: "deshbhakt", publisher: "The DeshBhakt / Akash Banerjee", type: "Secondary video compilation", url: "https://www.youtube.com/watch?v=x2UMpWL-IU4", title: "Pt.10 | Brown Pants Unleash Havoc In Delhi", note: "22-minute commentary video supplied as a local working copy for protected review. Embedded clips are treated as secondary-source material; identities and the provenance of each inserted clip require separate verification." },
   { id: "ap", publisher: "Associated Press", type: "Wire report", url: "https://apnews.com/article/india-cockroach-janta-party-sonam-wangchuk-hunger-strike-cbeb4773e89d67250f0bcad1670fcd38", title: "Thousands gather to attempt a march to Parliament", note: "On-ground account and photographs of baton and tear-gas use." },
   { id: "ht", publisher: "Hindustan Times", type: "Chronology", url: "https://www.hindustantimes.com/india-news/jantar-mantar-cjp-protest-a-blow-by-blow-account-of-what-happened-on-monday-delhi-101784604090492-amp.html", title: "A blow-by-blow account of what happened", note: "Time-ordered reporting across Jantar Mantar and central Delhi." },
   { id: "pti", publisher: "PTI / ThePrint", type: "Official account", url: "https://theprint.in/india/118-police-personnel-injured-70-protesters-detained-as-cjp-protest-turns-violent-in-delhi/2991722/", title: "Delhi Police statement on injuries and detentions", note: "Police account alleging violence and property damage." },
@@ -30,13 +31,15 @@ export const event = {
     { id: "c2", title: "The Parliament march did not have police permission", summary: "The police position and advance reporting consistently state that no permission was granted for the march.", status: "corroborated" as ClaimStatus, citations: ["ap", "week"] },
     { id: "c3", title: "Police reported 118 personnel and around 60 protesters injured", summary: "These are attributed figures from the Delhi Police statement; independent medical totals have not been reviewed.", status: "contested" as ClaimStatus, citations: ["pti"] },
     { id: "c4", title: "Mobile internet was suspended in parts of Central Delhi", summary: "Rights reporting and contemporaneous accounts support a suspension; the authorizing order was not public when reviewed.", status: "corroborated" as ClaimStatus, citations: ["iff", "amnesty", "ht"] },
-    { id: "c5", title: "Unidentified people in plain clothes used force", summary: "Footage and eyewitness allegations require frame-level review and independent identity or deployment records.", status: "under_review" as ClaimStatus, citations: ["samdish"] },
+    { id: "c5", title: "Unidentified people in plain clothes used force", summary: "Footage and eyewitness allegations require frame-level review and independent identity or deployment records.", status: "under_review" as ClaimStatus, citations: ["samdish", "deshbhakt"] },
     { id: "c6", title: "Pellet weapons or electric shocks were used", summary: "Viral allegations are not supported by the reviewed seed-source set at this time.", status: "unreviewed" as ClaimStatus, citations: [] },
   ],
 };
 
 export type DocumentedActor = {
   id: string;
+  sourceId?: string;
+  privateOnly?: boolean;
   observedRole: string;
   identityState: "anonymous_subject" | "suggested_private" | "verified_private" | "approved_public" | "withdrawn";
   reviewStatus: "unreviewed" | "under_review" | "corroborated" | "contested";
@@ -57,7 +60,7 @@ export type DocumentedActor = {
     id: string;
     timestamp: string;
     timestampSeconds: number;
-    relation: "before_context" | "candidate_action" | "after_context";
+    relation: "before_context" | "candidate_action" | "after_context" | "context_only";
     observation: string;
     continuityLimit: string;
     derivativeSha256: string;
@@ -256,6 +259,101 @@ export const documentedActors: DocumentedActor[] = [
       { id: "SV-SAM-P0146", timestamp: "37:13.5", timestampSeconds: 2233.5, relation: "after_context", observation: "The vehicle, mounted position, and surrounding personnel remain in the continuous shot.", continuityLimit: "No individual control action can be resolved.", derivativeSha256: "295f4272d5459bfa3c8b325a87f6fa0d1727dec445573dcaf4aa1e47a4eb5d87" },
       { id: "SV-SAM-P0147", timestamp: "37:14.0", timestampSeconds: 2234, relation: "after_context", observation: "The camera continues to hold the vehicle and operator as the security line shifts.", continuityLimit: "This frame does not establish a separate action or incident.", derivativeSha256: "0442954cd411a8b4c14fcaab0aa82f1c105682b1d5838b7a1c6786ac8d223401" },
       { id: "SV-SAM-P0148", timestamp: "37:14.5", timestampSeconds: 2234.5, relation: "after_context", observation: "The operator remains visible at the end of the reviewed vehicle sequence.", continuityLimit: "The sequence ends without a clear view of discharge, equipment controls, or identity.", derivativeSha256: "384ca3b083299a4f3a3e256a7f9bf49c647b83a2a2636acdad08b52b5c3395e5" },
+    ],
+    identityEvidenceOpen: true,
+  },
+  {
+    id: "SV-AKB-U01",
+    sourceId: "deshbhakt",
+    observedRole: "Civil-dress subject in a white shirt and brown trousers",
+    identityState: "anonymous_subject",
+    reviewStatus: "under_review",
+    reviewApprovals: 0,
+    timestampStart: "02:30.4",
+    timestampEnd: "02:31.6",
+    startSeconds: 150,
+    action: "A short edited sequence appears to show this anonymous subject moving through the crowd with a baton-like object and making a lateral or downward motion near another person.",
+    limits: "The secondary video intercuts the action with portrait and commentary frames. The selected stills do not clearly resolve contact, injury, authority, necessity, proportionality, or identity, and they must not be merged with another profile by facial resemblance.",
+    evidenceFrames: [
+      { id: "SV-AKB-P0001", timestamp: "02:30.4", timestampSeconds: 150.4, relation: "candidate_action", observation: "The subject holds a baton-like object behind the right hip while a nearby person bends or moves away.", continuityLimit: "A single still does not show whether the object made contact or why either person moved.", derivativeSha256: "44c5204fe880723568d49f3f52fcb865776ad311eab2af57f295a5be806004bb" },
+      { id: "SV-AKB-P0002", timestamp: "02:30.6", timestampSeconds: 150.6, relation: "before_context", observation: "The subject remains in the same immediate street position as the nearby person continues moving.", continuityLimit: "The baton-like object is partly obscured and no contact is visible.", derivativeSha256: "04a788657ed02cfb4f14c1939e52e5782dbf9b6b687dcd2c88b174b01351af29" },
+      { id: "SV-AKB-P0003", timestamp: "02:30.8", timestampSeconds: 150.8, relation: "after_context", observation: "The subject turns within the same short action clip as a foreground bystander crosses the view.", continuityLimit: "Foreground occlusion prevents a complete view of the subject's arms and object.", derivativeSha256: "9a63649c18e2a53b08b6908f94d99629c70aed8f314f131d7663c9fa38a11414" },
+      { id: "SV-AKB-P0004", timestamp: "02:31.4", timestampSeconds: 151.4, relation: "candidate_action", observation: "After an editorial cut, the same scene position shows the subject extending the baton-like object toward the left side of the crowd.", continuityLimit: "The edit interrupts continuity and the frame does not resolve contact or the target of the motion.", derivativeSha256: "02823f2b0e242686a2fb3ce702e20431a870634d36eedc76c14214cd9ebe2d0e" },
+      { id: "SV-AKB-P0005", timestamp: "02:31.6", timestampSeconds: 151.6, relation: "candidate_action", observation: "The subject appears to continue the lateral motion while uniformed personnel and protesters remain nearby.", continuityLimit: "The source is an edited compilation; no finding of a strike, injury, official status, or excessive force is made from this frame.", derivativeSha256: "7a7b1fb11e61b92c47632240c15cea6eb7e0993bc2da9dfe3164f454822f5b26" },
+    ],
+    identityEvidenceOpen: true,
+  },
+  {
+    id: "SV-AKB-U02",
+    sourceId: "deshbhakt",
+    observedRole: "Masked civil-dress subject holding a long wooden object",
+    identityState: "anonymous_subject",
+    reviewStatus: "unreviewed",
+    reviewApprovals: 0,
+    timestampStart: "07:45",
+    timestampEnd: "07:46",
+    startSeconds: 465,
+    action: "The subject is shown carrying or holding a long wooden object in an inserted street clip.",
+    limits: "No strike, contact, police status, deployment authority, or misconduct is visible in these selected frames. This is contextual evidence only, not an allegation of brutality or an identity match.",
+    evidenceFrames: [
+      { id: "SV-AKB-P0006", timestamp: "07:45.0", timestampSeconds: 465, relation: "context_only", observation: "The masked subject is visible holding a long wooden object near a roadside barrier.", continuityLimit: "Possession alone does not establish use, authority, or misconduct.", derivativeSha256: "03c291acffa7fc2202e6fe540836d64d0d00f9cb7235f97af16c3114ac13f369" },
+      { id: "SV-AKB-P0007", timestamp: "07:45.5", timestampSeconds: 465.5, relation: "context_only", observation: "The subject remains in the same inserted clip while walking with the object angled downward.", continuityLimit: "No contact or threatening motion is visible.", derivativeSha256: "4c6077608e8534e9a77d323c86d4589fffccba05fc2562401536cdf2df372f86" },
+      { id: "SV-AKB-P0008", timestamp: "07:46.0", timestampSeconds: 466, relation: "context_only", observation: "The object and masked subject remain visible at the end of the short sequence.", continuityLimit: "The clip does not establish a role, name, employer, or completed act.", derivativeSha256: "101fe612efc73d91f4151b6f0fdcd4e9dbaf935b162fb9425a9aa2877e125fdd" },
+    ],
+    identityEvidenceOpen: true,
+  },
+  {
+    id: "SV-AKB-U03",
+    sourceId: "deshbhakt",
+    observedRole: "Left-side civil-dress subject in a white shirt holding a stick",
+    identityState: "anonymous_subject",
+    reviewStatus: "unreviewed",
+    reviewApprovals: 0,
+    timestampStart: "08:34",
+    timestampEnd: "08:35",
+    startSeconds: 514,
+    action: "An inserted still sequence shows the left-side subject holding a stick while uniformed personnel are visible in the background.",
+    limits: "The stills show possession, not a strike or contact. They do not establish police affiliation, misconduct, identity, or a link to SV-AKB-U01; cross-shot biometric matching is disabled.",
+    evidenceFrames: [
+      { id: "SV-AKB-P0009", timestamp: "08:34.0", timestampSeconds: 514, relation: "context_only", observation: "The left-side subject stands holding a stick with uniformed personnel behind the pair.", continuityLimit: "This edited still does not show how the object was used.", derivativeSha256: "0479278fc41a0e6ec2e6edc302da131ae4fcc23d3be0387e6f4078303e902696" },
+      { id: "SV-AKB-P0010", timestamp: "08:34.5", timestampSeconds: 514.5, relation: "context_only", observation: "A subject-specific crop preserves the left-side person's clothing, object, and immediate background context.", continuityLimit: "Cropping assists review only and is not facial recognition or identity evidence.", derivativeSha256: "7d70b9d7bd6e00cdae2a2eacc0c9156f89493666c7e5e51d659f70d92325b2d1" },
+      { id: "SV-AKB-P0011", timestamp: "08:35.0", timestampSeconds: 515, relation: "context_only", observation: "The same inserted still remains on screen as the commentary video adds editorial markings.", continuityLimit: "Repeated display is not independent corroboration or a separate incident.", derivativeSha256: "2211385ba9be81b7351e4b920ae9ae0d07741e8c2489304369ccbfa8d8abff72" },
+    ],
+    identityEvidenceOpen: true,
+  },
+  {
+    id: "SV-AKB-U04",
+    sourceId: "deshbhakt",
+    observedRole: "Right-side civil-dress subject in a white shirt holding a stick",
+    identityState: "anonymous_subject",
+    reviewStatus: "unreviewed",
+    reviewApprovals: 0,
+    timestampStart: "08:34",
+    timestampEnd: "08:35",
+    startSeconds: 514,
+    action: "An inserted still sequence shows the right-side subject holding a stick while uniformed personnel are visible in the background.",
+    limits: "The stills show possession, not a strike or contact. They do not establish police affiliation, misconduct, identity, or a link to any other profile.",
+    evidenceFrames: [
+      { id: "SV-AKB-P0012", timestamp: "08:34.0", timestampSeconds: 514, relation: "context_only", observation: "The right-side subject stands holding a stick with uniformed personnel behind the pair.", continuityLimit: "This edited still does not show how the object was used.", derivativeSha256: "885466ad2256f525cec53f44eef85476eecf978c1cb120148474a474847d992e" },
+      { id: "SV-AKB-P0013", timestamp: "08:34.5", timestampSeconds: 514.5, relation: "context_only", observation: "A subject-specific crop preserves the right-side person's clothing, object, and immediate background context.", continuityLimit: "Cropping assists review only and is not facial recognition or identity evidence.", derivativeSha256: "ab5c1114bb1d71f859a9a96d2a74c1f9b724316a569a218f47bf86fb20f3be80" },
+      { id: "SV-AKB-P0014", timestamp: "08:35.0", timestampSeconds: 515, relation: "context_only", observation: "The same inserted still remains on screen as the commentary video adds editorial markings.", continuityLimit: "Repeated display is not independent corroboration or a separate incident.", derivativeSha256: "a37e4ba2f6205d78471eb2acee1853d5417cbbada169af0b2a04ce0ac19af59c" },
+    ],
+    identityEvidenceOpen: true,
+  },
+  {
+    id: "SV-REF-U01",
+    privateOnly: true,
+    observedRole: "User-supplied reference subject",
+    identityState: "anonymous_subject",
+    reviewStatus: "unreviewed",
+    reviewApprovals: 0,
+    timestampStart: "No source time",
+    timestampEnd: "No source time",
+    startSeconds: 0,
+    action: "A user supplied this portrait for protected reference and possible future documentary verification.",
+    limits: "The image alone establishes neither name, date, location, police affiliation, conduct, nor a link to any video subject. It is not used for face search, biometric comparison, or resemblance-based merging.",
+    evidenceFrames: [
+      { id: "SV-REF-P0001", timestamp: "USER-SUPPLIED", timestampSeconds: 0, relation: "context_only", observation: "Portrait supplied by the user as a standalone protected reference image.", continuityLimit: "No conduct or identity inference may be made from this image alone, and it is not linked to a video profile by resemblance.", derivativeSha256: "5d127a35a0fba6cd4c8327ad62c28e02d5b4a57c1bc952aa04782041668e73e2" },
     ],
     identityEvidenceOpen: true,
   },

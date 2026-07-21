@@ -89,6 +89,41 @@ test("renders expanded anonymous profiles from manually reviewed adjacent sequen
   assert.match(vehicleHtml, /does not establish the equipment type/i);
 });
 
+test("renders the second-video profiles and keeps the supplied portrait private", async () => {
+  const reviewerHeaders = { accept: "text/html", "oai-authenticated-user-email": "reviewer@example.test" };
+  const [actionProfile, contextProfile, referenceProfile, publicReference] = await Promise.all([
+    appRequest("/review/profiles/SV-AKB-U01", { headers: reviewerHeaders }),
+    appRequest("/review/profiles/SV-AKB-U02", { headers: reviewerHeaders }),
+    appRequest("/review/profiles/SV-REF-U01", { headers: reviewerHeaders }),
+    render("/events/jantar-mantar-july-20/documented-actors/sv-ref-u01"),
+  ]);
+  assert.equal(actionProfile.status, 200);
+  assert.equal(contextProfile.status, 200);
+  assert.equal(referenceProfile.status, 200);
+  assert.equal(publicReference.status, 404);
+  const actionHtml = await actionProfile.text();
+  const contextHtml = await contextProfile.text();
+  const referenceHtml = await referenceProfile.text();
+  assert.match(actionHtml, /Civil-dress subject in a white shirt and brown trousers/i);
+  assert.match(actionHtml, /P0001/i);
+  assert.match(actionHtml, /P0005/i);
+  assert.match(contextHtml, /Context or reference material/i);
+  assert.match(contextHtml, /No strike, contact, police status/i);
+  assert.match(referenceHtml, /User-supplied reference subject/i);
+  assert.match(referenceHtml, /not used for face search/i);
+  assert.match(referenceHtml, /USER-SUPPLIED/i);
+});
+
+test("links the second-video public record to its own source without publishing the portrait", async () => {
+  const response = await render("/events/jantar-mantar-july-20/documented-actors/sv-akb-u01");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /SV-AKB-U01/i);
+  assert.match(html, /x2UMpWL-IU4/i);
+  assert.match(html, /02:30\.4/i);
+  assert.doesNotMatch(html, /SV-REF-U01/i);
+});
+
 test("renders the case file with explicit uncertainty", async () => {
   const response = await render("/events/jantar-mantar-july-20");
   assert.equal(response.status, 200);

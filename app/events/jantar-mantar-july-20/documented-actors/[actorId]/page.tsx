@@ -1,12 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteHeader } from "../../../../components/SiteHeader";
-import { documentedActors, getDocumentedActor } from "../../../../data";
-
-const sourceUrl = "https://www.youtube.com/watch?v=6MTXCAaOy3o";
+import { documentedActors, getDocumentedActor, getSource } from "../../../../data";
 
 export function generateStaticParams() {
-  return documentedActors.map((actor) => ({ actorId: actor.id.toLowerCase() }));
+  return documentedActors.filter((actor) => !actor.privateOnly).map((actor) => ({ actorId: actor.id.toLowerCase() }));
 }
 
 export const metadata = {
@@ -17,9 +15,12 @@ export const metadata = {
 export default async function DocumentedActorPage({ params }: { params: Promise<{ actorId: string }> }) {
   const { actorId } = await params;
   const actor = getDocumentedActor(actorId);
-  if (!actor) notFound();
+  if (!actor || actor.privateOnly) notFound();
 
-  const embedUrl = `https://www.youtube-nocookie.com/embed/6MTXCAaOy3o?start=${actor.startSeconds}`;
+  const source = getSource(actor.sourceId ?? "samdish") ?? getSource("samdish")!;
+  const sourceUrl = source.url;
+  const sourceVideoId = new URL(sourceUrl).searchParams.get("v") ?? "6MTXCAaOy3o";
+  const embedUrl = `https://www.youtube-nocookie.com/embed/${sourceVideoId}?start=${actor.startSeconds}`;
   const publicSourceUrl = `${sourceUrl}&t=${actor.startSeconds}s`;
 
   return (
@@ -43,7 +44,7 @@ export default async function DocumentedActorPage({ params }: { params: Promise<
           <section className="actor-profile-media" aria-labelledby="source-window-title">
             <div className="profile-frame-status">
               <div className={`actor-visual ${actor.privateReviewFrame ? "actor-visual-ready" : ""}`} aria-label={actor.privateReviewFrame ? "Private anonymous subject box prepared; public image withheld" : "Public face crop withheld pending rights review"}>
-                <span className="actor-code">{actor.id.replace("SV-SAM-", "")}</span>
+                <span className="actor-code">{actor.id.replace(/^SV-[A-Z]+-/, "")}</span>
                 <span className="frame-withheld">{actor.privateReviewFrame ? <>PRIVATE REVIEW FRAME READY<br />PUBLIC IMAGE WITHHELD</> : <>PUBLIC FACE CROP WITHHELD<br />AUTHORIZED ORIGINAL REQUIRED</>}</span>
               </div>
               <div>
@@ -70,7 +71,7 @@ export default async function DocumentedActorPage({ params }: { params: Promise<
                   {actor.evidenceFrames.map((frame) => (
                     <article className="sequence-frame" key={frame.id}>
                       <div className="sequence-frame-placeholder" aria-label={`Private frame ${frame.id} withheld`}>
-                        <span>{frame.id.replace("SV-SAM-", "")}</span>
+                        <span>{frame.id.replace(/^SV-[A-Z]+-/, "")}</span>
                         <strong>{frame.timestamp}</strong>
                         <small>PRIVATE DERIVATIVE</small>
                       </div>

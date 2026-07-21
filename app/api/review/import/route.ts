@@ -41,7 +41,12 @@ export async function POST(request: Request) {
   for (const item of items) {
     const file = files.get(item.derivative_file);
     if (!file) { missing.push(item.derivative_file); continue; }
-    const key = `samdish/${item.derivative_file}`;
+    const namespace = (item.source_series ?? "review")
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 80) || "review";
+    const key = `${namespace}/${item.derivative_file}`;
     await bucket.put(key, file.stream(), { httpMetadata: { contentType: "image/webp" }, customMetadata: { sha256: item.sha256, timestamp: item.timestamp, recordId: item.record_id } });
     const reviewedLink = reviewedProfileLinks[item.record_id];
     statements.push(db.prepare(`INSERT INTO review_artifacts (id, timestamp, derivative_key, sha256, source_series, status, mapped_subject_id, relation, observation, updated_by)

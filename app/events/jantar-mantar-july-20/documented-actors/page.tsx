@@ -51,10 +51,10 @@ export default function DocumentedActorsPage() {
             </div>
 
             <div className="actor-grid">
-              {documentedActors.map((actor) => (
+              {documentedActors.filter((actor) => !actor.privateOnly).map((actor) => (
                 <article className="actor-card" id={actor.id} key={actor.id}>
                   <div className={`actor-visual ${actor.privateReviewFrame ? "actor-visual-ready" : ""}`} aria-label={actor.privateReviewFrame ? "Private review frame prepared; public image withheld" : "No public frame is available"}>
-                    <span className="actor-code">{actor.id.replace("SV-SAM-", "")}</span>
+                    <span className="actor-code">{actor.id.replace(/^SV-[A-Z]+-/, "")}</span>
                     <span className="frame-withheld">{actor.privateReviewFrame ? <>PRIVATE BOX READY<br />{actor.privateReviewFrame.timestamp} · PUBLIC IMAGE WITHHELD</> : <>FRAME WITHHELD<br />RIGHTS REVIEW</>}</span>
                   </div>
                   <div className="actor-card-body">
