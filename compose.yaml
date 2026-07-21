@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: studentvoice
+      POSTGRES_USER: studentvoice
+      POSTGRES_PASSWORD: local-only-change-me
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U studentvoice"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  api:
+    build: ./services/api
+    environment:
+      STUDENTVOICE_ENVIRONMENT: development
+      STUDENTVOICE_DATABASE_URL: postgresql+psycopg://studentvoice:local-only-change-me@postgres/studentvoice
+      STUDENTVOICE_PUBLIC_BASE_URL: http://localhost:3000
+      STUDENTVOICE_QUARANTINE_ROOT: /var/studentvoice/quarantine
+    ports: ["8000:8000"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - quarantine-data:/var/studentvoice/quarantine
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    ports: ["3000:3000"]
+    depends_on: [api]
+
+volumes:
+  postgres-data:
+  quarantine-data:

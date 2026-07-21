@@ -1,0 +1,16 @@
+import { SiteHeader } from "../components/SiteHeader";
+
+export const metadata = { title: "Methodology", description: "How StudentVoice preserves evidence, evaluates claims, protects sources, and publishes corrections." };
+
+const methods = [
+  ["01", "Acquisition", "Original bytes and filenames are preserved before any transformation. SHA-256 and BLAKE3 hashes, acquisition context, rights basis, and custody events are recorded."],
+  ["02", "Analysis", "Machines may propose scenes, text, speech, objects, and privacy masks. Every proposal retains its model version and confidence. Proposals are never public facts."],
+  ["03", "Corroboration", "Reviewers compare independent sources, official accounts, timestamps, location context, counterclaims, and known limitations. Popularity does not affect status."],
+  ["04", "Publication", "Two reviewers approve allegations. Public identities require a stricter official-record, second-source, editor, and legal review gate."],
+  ["05", "Correction", "Published pages are immutable snapshots. A correction creates a new version while the earlier text and reason for change remain visible."],
+  ["06", "Retention", "Accepted evidence is retained for seven years by default; rejected uploads for 30 days; hashes and non-sensitive audit receipts indefinitely, unless a legal hold applies."],
+];
+
+export default function MethodologyPage() {
+  return <><SiteHeader /><main><header className="page-hero shell"><p className="eyebrow">Open methodology · खुली प्रक्रिया</p><h1>Trust is a process,<br />not a badge.</h1><p className="lede">StudentVoice follows evidence-preservation and open-source investigation practices while making uncertainty, disagreement, and corrections visible to readers.</p></header><div className="shell form-shell"><section className="case-section"><div className="method-grid">{methods.map(([number,title,body]) => <article className="method-card" key={number}><span className="source-type">{number}</span><h3>{title}</h3><p>{body}</p></article>)}</div></section><section className="case-section" id="safety"><p className="eyebrow">Source safety</p><h2>Minimize what can cause harm</h2><div className="method-grid"><article className="method-card"><h3>Public derivative</h3><p>Approved evidence is published as a redacted copy. Bystanders, minors, witnesses, medical details, precise locations, plates, and device metadata are removed where necessary.</p></article><article className="method-card"><h3>Protected original</h3><p>The unaltered original is never downloadable from a public page. Access is logged and restricted to authorized evidence and legal roles.</p></article><article className="method-card"><h3>Pseudonymous contact</h3><p>A source may use a protected pseudonym or submit once without an account. Contact details are encrypted separately from editorial records.</p></article><article className="method-card"><h3>No biometrics</h3><p>No face or gait recognition, cross-video re-identification, personal risk scores, home addresses, family profiles, or crowd-sourced public naming.</p></article></div></section><section className="case-section"><div className="notice">This open-source project supports careful documentation; it does not replace qualified legal advice, forensic examination, or an independent investigation.</div></section></div></main></>;
+}

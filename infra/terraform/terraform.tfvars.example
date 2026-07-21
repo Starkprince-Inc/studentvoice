@@ -1,0 +1,6 @@
+web_image            = "example.azurecr.io/studentvoice-web@sha256:replace-me"
+api_image            = "example.azurecr.io/studentvoice-api@sha256:replace-me"
+worker_image         = "example.azurecr.io/studentvoice-worker@sha256:replace-me"
+entra_admin_object_id = "00000000-0000-0000-0000-000000000000"
+entra_admin_name      = "studentvoice-deployer"
+alert_email           = "security@example.org"

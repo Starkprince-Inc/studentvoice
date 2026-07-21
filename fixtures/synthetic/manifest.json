@@ -1,0 +1,11 @@
+{
+  "fixture_id": "sv-synthetic-frame-0001",
+  "synthetic": true,
+  "license": "CC0-1.0",
+  "people_are_fictional": true,
+  "expected_ocr": ["SYNTHETIC CIVIC ASSEMBLY", "DEMO / NOT EVIDENCE"],
+  "privacy_regions": [
+    {"label": "fictional_face", "x": 112, "y": 176, "width": 54, "height": 54},
+    {"label": "fictional_face", "x": 298, "y": 160, "width": 54, "height": 54}
+  ]
+}

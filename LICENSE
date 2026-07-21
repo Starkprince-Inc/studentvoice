@@ -1,0 +1,25 @@
+StudentVoice is licensed under the GNU Affero General Public License,
+version 3 only (AGPL-3.0-only), published 19 November 2007.
+
+The complete, authoritative license text is available from the GNU Project:
+https://www.gnu.org/licenses/agpl-3.0.txt
+
+SPDX-License-Identifier: AGPL-3.0-only
+
+Copyright (C) 2026 StudentVoice contributors
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, version 3 of the License.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for details.
+
+If you modify this program and make it available for users to interact with
+remotely through a computer network, you must offer those users the
+Corresponding Source as required by section 13 of the AGPL.
+
+Evidence, source identities, internal editorial records, and production data
+are separate works and are not licensed under this software license merely
+because this program stores or displays them.
