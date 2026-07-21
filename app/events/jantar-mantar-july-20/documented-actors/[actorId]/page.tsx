@@ -35,6 +35,7 @@ export default async function DocumentedActorPage({ params }: { params: Promise<
             <span className={`meta-chip status-${actor.reviewStatus}`}>{actor.reviewStatus.replace("_", " ")}</span>
             <span className="meta-chip">IDENTITY: {actor.identityState.replace("_", " ")}</span>
             <span className="meta-chip">{actor.reviewApprovals} / 2 REVIEWERS</span>
+            {actor.evidenceFrames?.length ? <span className="meta-chip">{actor.evidenceFrames.length} FRAME SEQUENCE</span> : null}
           </div>
         </header>
 
@@ -57,6 +58,34 @@ export default async function DocumentedActorPage({ params }: { params: Promise<
                 ) : <p>A private reviewer may draw a subject box only on an authorized working copy. It is an anonymous within-video aid for redaction and review—not facial recognition or identity evidence.</p>}
               </div>
             </div>
+
+            {actor.evidenceFrames?.length ? (
+              <section className="profile-evidence-sequence" aria-labelledby="evidence-sequence-title">
+                <div>
+                  <p className="eyebrow">Private multi-frame evidence sequence</p>
+                  <h2 id="evidence-sequence-title">Adjacent frames, separate observations.</h2>
+                  <p>These records preserve temporal context without assuming that every visible person is the same individual. Public stills remain withheld; each receipt resolves to the linked source timestamp and a protected derivative hash.</p>
+                </div>
+                <div className="sequence-grid">
+                  {actor.evidenceFrames.map((frame) => (
+                    <article className="sequence-frame" key={frame.id}>
+                      <div className="sequence-frame-placeholder" aria-label={`Private frame ${frame.id} withheld`}>
+                        <span>{frame.id.replace("SV-SAM-", "")}</span>
+                        <strong>{frame.timestamp}</strong>
+                        <small>PRIVATE DERIVATIVE</small>
+                      </div>
+                      <div className="sequence-frame-body">
+                        <span className="source-type">{frame.relation.replaceAll("_", " ")}</span>
+                        <p>{frame.observation}</p>
+                        <p className="actor-limit"><strong>Continuity limit:</strong> {frame.continuityLimit}</p>
+                        <p className="sequence-hash"><strong>SHA-256</strong><code>{frame.derivativeSha256}</code></p>
+                        <a className="source-card-link" href={`${sourceUrl}&t=${Math.floor(frame.timestampSeconds)}s`} target="_blank" rel="noreferrer">Open source at {frame.timestamp} ↗</a>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ) : null}
 
             <div className="profile-source-window">
               <div>
@@ -95,6 +124,7 @@ export default async function DocumentedActorPage({ params }: { params: Promise<
               <span className="source-type">IDENTITY EVIDENCE</span>
               <h3>No public name</h3>
               <p>A private identity suggestion may cite a readable badge or nameplate, official deployment record, court filing, or reliable independent reporting. A face match, resemblance, clothing, or crowd guess is rejected.</p>
+              {actor.identityEvidenceOpen ? <Link className="button button-primary identity-submit-button" href={`/submit?mode=identity&subject=${actor.id}`}>Submit identity evidence</Link> : null}
             </div>
           </aside>
 
@@ -104,7 +134,7 @@ export default async function DocumentedActorPage({ params }: { params: Promise<
               <h2 id="accountability-title">Evidence can be challenged, corrected, or strengthened.</h2>
             </div>
             <div className="method-grid">
-              <article className="method-card"><h3>Submit documentary evidence</h3><p>Provide an original recording, creator authorization, readable badge/nameplate, deployment record, court document, or another independent source. Do not submit identity guesses based on appearance.</p><Link className="source-card-link" href="/submit">Start a protected submission →</Link></article>
+              <article className="method-card"><h3>Submit documentary evidence</h3><p>Provide an original recording, creator authorization, readable badge/nameplate, deployment record, court document, or another independent source. Do not submit identity guesses based on appearance.</p><Link className="source-card-link" href={actor.identityEvidenceOpen ? `/submit?mode=identity&subject=${actor.id}` : "/submit"}>Start a protected submission →</Link></article>
               <article className="method-card"><h3>Right of reply</h3><p>A person or authorized representative may contest the description, provide context, request correction, or ask that a verified response appear with the record.</p><Link className="source-card-link" href="/submit">Send a response or correction →</Link></article>
             </div>
           </section>

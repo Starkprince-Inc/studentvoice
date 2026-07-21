@@ -68,7 +68,7 @@ export default function DocumentedActorsPage() {
                     <dl className="actor-facts">
                       <div><dt>Source window</dt><dd>{actor.timestampStart}–{actor.timestampEnd}</dd></div>
                       <div><dt>Identity</dt><dd>{actor.identityState.replace("_", " ")}</dd></div>
-                      <div><dt>Reviewers</dt><dd>{actor.reviewApprovals} of 2 approved</dd></div>
+                      <div><dt>{actor.evidenceFrames?.length ? "Sequence" : "Reviewers"}</dt><dd>{actor.evidenceFrames?.length ? `${actor.evidenceFrames.length} frames` : `${actor.reviewApprovals} of 2 approved`}</dd></div>
                     </dl>
                     <div className="actor-card-actions">
                       <Link className="button button-primary" href={`/events/jantar-mantar-july-20/documented-actors/${actor.id.toLowerCase()}`}>Open evidence record →</Link>

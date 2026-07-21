@@ -194,6 +194,21 @@ button, input, textarea, select { font: inherit; }
 .profile-frame-status p, .profile-source-window p, .profile-rail-card p, .profile-accountability p { color: var(--muted); font-size: .86rem; line-height: 1.6; }
 .profile-source-window { border-top: 3px solid var(--ink); padding-top: 28px; }
 .profile-source-window .video-frame { margin: 24px 0 28px; }
+.profile-evidence-sequence { border-top: 3px solid var(--ink); padding-top: 28px; }
+.profile-evidence-sequence h2 { font: 500 clamp(2rem, 4vw, 3.7rem)/1 Georgia, serif; letter-spacing: -.04em; margin: 10px 0 18px; }
+.profile-evidence-sequence > div:first-child > p:last-child { color: var(--muted); font-size: .86rem; line-height: 1.6; }
+.sequence-grid { display: grid; gap: 14px; margin-top: 24px; }
+.sequence-frame { display: grid; grid-template-columns: 180px 1fr; border: 1px solid var(--line); background: #faf8f2; }
+.sequence-frame-placeholder { min-height: 190px; background: var(--ink); color: white; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; border: 3px solid var(--acid); }
+.sequence-frame-placeholder span { color: var(--acid); font: 800 .8rem Consolas, monospace; }
+.sequence-frame-placeholder strong { font: 800 1.55rem Consolas, monospace; }
+.sequence-frame-placeholder small { color: #aaa99f; font: 800 .62rem Consolas, monospace; letter-spacing: .1em; }
+.sequence-frame-body { padding: 20px; }
+.sequence-frame-body > p { line-height: 1.55; }
+.sequence-hash { display: grid; gap: 4px; color: var(--muted); font-size: .72rem; }
+.sequence-hash code { overflow-wrap: anywhere; font-size: .65rem; }
+.identity-submit-button { margin-top: 16px; }
+.identity-demo-note { margin-top: 18px; }
 .actor-profile-rail { display: grid; align-content: start; gap: 18px; }
 .profile-rail-card { border: 1px solid var(--line); background: #faf8f2; padding: 24px; }
 .profile-rail-card h2 { font: 600 1.5rem/1.2 Georgia, serif; margin: 18px 0; }
@@ -245,6 +260,8 @@ button, input, textarea, select { font: inherit; }
   .actor-facts { grid-template-columns: 1fr; }
   .actor-facts div + div { border-top: 1px solid var(--line); }
   .profile-frame-status { grid-template-columns: 1fr; }
+  .sequence-frame { grid-template-columns: 1fr; }
+  .sequence-frame-placeholder { min-height: 150px; }
 }
 
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .button { transition: none; } }

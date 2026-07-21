@@ -53,6 +53,16 @@ export type DocumentedActor = {
     derivativeSha256: string;
     note: string;
   };
+  evidenceFrames?: Array<{
+    id: string;
+    timestamp: string;
+    timestampSeconds: number;
+    relation: "before_context" | "candidate_action" | "after_context";
+    observation: string;
+    continuityLimit: string;
+    derivativeSha256: string;
+  }>;
+  identityEvidenceOpen?: boolean;
 };
 
 export const documentedActors: DocumentedActor[] = [
@@ -86,6 +96,69 @@ export const documentedActors: DocumentedActor[] = [
       derivativeSha256: "2ad296001fce54a9a31cf9360ab4690c7c6cc6bbf28bac582d28bd145049c6ac",
       note: "Background and visible faces are obscured in the private derivative. The box is a manual within-video marker, not a biometric match.",
     },
+    evidenceFrames: [
+      {
+        id: "SV-SAM-P0038",
+        timestamp: "14:28.0",
+        timestampSeconds: 868,
+        relation: "before_context",
+        observation: "Multiple uniformed personnel and protesters occupy the same narrow dispersal corridor immediately before the selected frame.",
+        continuityLimit: "This context frame does not independently establish which individual appears in the next frame.",
+        derivativeSha256: "0ec1a50567c6480bb97cfa22ba5c51a548248919ec4947b8243081706025526d",
+      },
+      {
+        id: "SV-SAM-P0039",
+        timestamp: "14:28.5",
+        timestampSeconds: 868.5,
+        relation: "candidate_action",
+        observation: "A uniformed subject appears with a baton raised during the crowd movement.",
+        continuityLimit: "The still does not show contact, motive, necessity, or the subject's identity.",
+        derivativeSha256: "aa59f16b77e3120c347b146993093dbc2ee7e728e2eab5a15342c658c35643c7",
+      },
+      {
+        id: "SV-SAM-P0040",
+        timestamp: "14:29.0",
+        timestampSeconds: 869,
+        relation: "after_context",
+        observation: "Baton-bearing personnel continue moving through the same corridor half a second later.",
+        continuityLimit: "Occlusion prevents a reliable finding that every visible body position belongs to the same subject.",
+        derivativeSha256: "17903e430f3f87c650f8576c057963cdb978d031b697ce93abb156ffcf90326c",
+      },
+    ],
+    identityEvidenceOpen: true,
+  },
+  {
+    id: "SV-SAM-U04",
+    observedRole: "Candidate uniformed subject in a green helmet during dispersal",
+    identityState: "anonymous_subject",
+    reviewStatus: "under_review",
+    reviewApprovals: 0,
+    timestampStart: "14:29",
+    timestampEnd: "14:30",
+    startSeconds: 869,
+    action: "Adjacent frames appear to show a green-helmeted uniformed subject raising or holding a baton amid crowd movement.",
+    limits: "No contact is visible in the selected stills. Continuity is a provisional within-sequence observation and is not biometric identification or a finding of brutality.",
+    evidenceFrames: [
+      {
+        id: "SV-SAM-P0041",
+        timestamp: "14:29.5",
+        timestampSeconds: 869.5,
+        relation: "candidate_action",
+        observation: "A green-helmeted uniformed subject appears to hold a baton above shoulder height.",
+        continuityLimit: "The frame does not show contact or establish identity.",
+        derivativeSha256: "2e16a9c995cb5d175d853ce4c31afc0ebfd15a89eda0dd141429a5624e757333",
+      },
+      {
+        id: "SV-SAM-P0042",
+        timestamp: "14:30.0",
+        timestampSeconds: 870,
+        relation: "after_context",
+        observation: "The green-helmeted subject remains visible in the adjacent dispersal scene.",
+        continuityLimit: "Similarity of helmet and position is only a provisional within-sequence aid; it cannot support a real-world identity.",
+        derivativeSha256: "117147a5c3893fdce4c552720d4241d3dd0d4b156b8b383a14ab19acd996292a",
+      },
+    ],
+    identityEvidenceOpen: true,
   },
   {
     id: "SV-SAM-U02",

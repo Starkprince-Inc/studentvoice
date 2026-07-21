@@ -1,12 +1,16 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-async function render(path = "/") {
+async function appRequest(path = "/", init = {}) {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-${path}`);
   const { default: handler } = await import(workerUrl.href);
   const fetch = typeof handler === "function" ? handler : handler.fetch.bind(handler);
-  return fetch(new Request(`http://localhost${path}`, { headers: { accept: "text/html" } }), { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } }, { waitUntil() {}, passThroughOnException() {} });
+  return fetch(new Request(`http://localhost${path}`, init), { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } }, { waitUntil() {}, passThroughOnException() {} });
+}
+
+async function render(path = "/") {
+  return appRequest(path, { headers: { accept: "text/html" } });
 }
 
 test("renders the public evidence homepage", async () => {
@@ -58,9 +62,73 @@ test("renders a separate evidence subpage for an anonymous actor", async () => {
   assert.match(html, /14:28\.5/i);
   assert.match(html, /382, 105, 568, 536/i);
   assert.match(html, /Derivative SHA-256/i);
+  assert.match(html, /3(?:<!-- -->)? FRAME SEQUENCE/i);
+  assert.match(html, /Adjacent frames, separate observations/i);
+  assert.match(html, /P0038/i);
+  assert.match(html, /P0039/i);
+  assert.match(html, /P0040/i);
+  assert.match(html, /Submit identity evidence/i);
   assert.match(html, /Right of reply/i);
   assert.match(html, /Open original at/i);
   assert.doesNotMatch(html, /verified identity/i);
+});
+
+test("renders a second anonymous candidate with a bounded frame sequence", async () => {
+  const response = await render("/events/jantar-mantar-july-20/documented-actors/sv-sam-u04");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /SV-SAM-U04/i);
+  assert.match(html, /green helmet/i);
+  assert.match(html, /2(?:<!-- -->)? FRAME SEQUENCE/i);
+  assert.match(html, /P0041/i);
+  assert.match(html, /P0042/i);
+  assert.doesNotMatch(html, /verified identity/i);
+});
+
+test("renders private documentary identity intake for an anonymous subject", async () => {
+  const response = await render("/submit?mode=identity&subject=SV-SAM-U01");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /Documentary identity evidence/i);
+  assert.match(html, /SUGGESTED_PRIVATE/i);
+  assert.match(html, /Proposed name for private verification/i);
+  assert.match(html, /not based only on a face/i);
+  assert.match(html, /does not persist the proposed name/i);
+});
+
+test("validates identity evidence without returning or persisting the proposed name", async () => {
+  const form = new FormData();
+  form.set("rights_confirmed", "on");
+  form.set("safety_confirmed", "on");
+  form.set("submission_mode", "identity_assertion");
+  form.set("subject_id", "SV-SAM-U01");
+  form.set("proposed_name", "Private Example");
+  form.set("identity_basis", "official_record");
+  form.set("context", "An official deployment record independently links this proposed identity to the cited time and place.");
+  form.set("independence_confirmed", "on");
+  form.set("not_resemblance_only", "on");
+  const response = await appRequest("/api/submission-demo", { method: "POST", body: form });
+  assert.equal(response.status, 201);
+  const body = await response.json();
+  assert.equal(body.identity_state, "suggested_private");
+  assert.equal(body.public_name_created, false);
+  assert.equal(body.submitted.proposed_name_received, true);
+  assert.doesNotMatch(JSON.stringify(body), /Private Example/);
+});
+
+test("rejects identity guesses without the non-resemblance confirmation", async () => {
+  const form = new FormData();
+  form.set("rights_confirmed", "on");
+  form.set("safety_confirmed", "on");
+  form.set("submission_mode", "identity_assertion");
+  form.set("subject_id", "SV-SAM-U01");
+  form.set("proposed_name", "Unsafe Guess");
+  form.set("identity_basis", "official_record");
+  form.set("context", "This explanation is deliberately long enough for server validation but lacks the required confirmation.");
+  form.set("independence_confirmed", "on");
+  const response = await appRequest("/api/submission-demo", { method: "POST", body: form });
+  assert.equal(response.status, 400);
+  assert.match(await response.text(), /non-resemblance confirmations are required/i);
 });
 
 test("renders methodology and protected intake information", async () => {
