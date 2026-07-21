@@ -18,6 +18,8 @@ test("renders the public evidence homepage", async () => {
   assert.match(html, /not outrage/i);
   assert.match(html, /Jantar Mantar/i);
   assert.match(html, /No biometric identification/i);
+  assert.match(html, /github\.com\/Starkprince-Inc\/studentvoice/i);
+  assert.match(html, /GitHub/i);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
 });
 

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { GitHubRepoBadge } from "./GitHubRepoBadge";
 
 export function SiteHeader() {
   return (
@@ -10,7 +11,7 @@ export function SiteHeader() {
           <Link href="/methodology">Methodology</Link>
           <Link href="/methodology#safety">Source safety</Link>
         </nav>
-        <div className="header-actions"><span className="language-toggle" aria-label="Languages supported">EN · हिन्दी</span><Link className="submit-mini" href="/submit">Submit evidence</Link></div>
+        <div className="header-actions"><span className="language-toggle" aria-label="Languages supported">EN · हिन्दी</span><GitHubRepoBadge /><Link className="submit-mini" href="/submit">Submit evidence</Link></div>
       </div>
     </header>
   );

@@ -33,6 +33,10 @@ button, input, textarea, select { font: inherit; }
 .header-actions { display: flex; align-items: center; gap: 10px; }
 .language-toggle { border: 1px solid var(--line); border-radius: 999px; padding: 7px 10px; font-size: 0.72rem; font-weight: 800; background: transparent; }
 .submit-mini { text-decoration: none; background: var(--ink); color: var(--paper); padding: 10px 14px; font-size: 0.78rem; font-weight: 800; }
+.github-repo-badge { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 7px 10px; border: 1px solid var(--ink); text-decoration: none; font-size: .7rem; font-weight: 900; background: var(--paper); transition: background 160ms ease, color 160ms ease; }
+.github-repo-badge:hover, .github-repo-badge:focus-visible { background: var(--acid); color: var(--ink); }
+.github-live-dot { width: 7px; height: 7px; border-radius: 50%; background: #238636; box-shadow: 0 0 0 3px rgba(35, 134, 54, .14); }
+.github-star-count { display: inline-flex; align-items: center; gap: 3px; font-family: Consolas, monospace; white-space: nowrap; }
 
 .hero { min-height: 660px; display: grid; grid-template-columns: 1.35fr 0.75fr; gap: 74px; align-items: center; padding-block: 74px 86px; }
 .eyebrow { text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.72rem; font-weight: 900; color: var(--muted); }
@@ -165,7 +169,11 @@ button, input, textarea, select { font: inherit; }
 @media (max-width: 600px) {
   .shell { width: min(100% - 24px, var(--max)); }
   .header-inner { height: 64px; grid-template-columns: 1fr auto; }
+  .header-inner { gap: 12px; }
+  .header-actions { gap: 6px; }
   .header-actions .language-toggle { display: none; }
+  .github-repo-name { display: none; }
+  .submit-mini { padding: 9px 10px; }
   .hero { min-height: auto; padding-block: 55px 70px; }
   .hero h1 { font-size: clamp(4rem, 22vw, 6rem); }
   .principles-grid, .evidence-grid, .method-grid, .field-grid { grid-template-columns: 1fr; }

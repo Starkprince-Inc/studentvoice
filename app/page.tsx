@@ -108,7 +108,7 @@ export default function Home() {
       <footer className="site-footer">
         <div className="shell footer-grid">
           <div><strong>STUDENTVOICE</strong><p>Open-source civic evidence infrastructure.</p></div>
-          <nav aria-label="Footer"><Link href="/methodology">Methodology</Link><Link href="/submit">Submit</Link><a href="https://github.com/" rel="noreferrer">AGPL-3.0 code</a></nav>
+          <nav aria-label="Footer"><Link href="/methodology">Methodology</Link><Link href="/submit">Submit</Link><a href="https://github.com/Starkprince-Inc/studentvoice" target="_blank" rel="noreferrer">GitHub repository ↗</a></nav>
           <p className="footer-note">No biometric identification. No public crowd-sourced naming. मशीन सुझाव प्रकाशित तथ्य नहीं हैं।</p>
         </div>
       </footer>
