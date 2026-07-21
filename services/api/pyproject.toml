@@ -10,7 +10,7 @@ dependencies = [
   "sqlalchemy==2.0.41",
   "pydantic-settings==2.10.1",
   "psycopg[binary]==3.2.9",
-  "cryptography==45.0.5",
+  "cryptography==49.0.0",
   "blake3==1.0.5",
   "alembic==1.16.4",
 ]
