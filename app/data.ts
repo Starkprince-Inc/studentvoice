@@ -112,3 +112,4 @@ export const documentedActors: DocumentedActor[] = [
 ];
 
 export function getSource(id: string) { return sources.find((source) => source.id === id); }
+export function getDocumentedActor(id: string) { return documentedActors.find((actor) => actor.id.toLowerCase() === id.toLowerCase()); }

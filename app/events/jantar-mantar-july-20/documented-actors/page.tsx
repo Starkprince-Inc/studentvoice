@@ -70,7 +70,10 @@ export default function DocumentedActorsPage() {
                       <div><dt>Identity</dt><dd>{actor.identityState.replace("_", " ")}</dd></div>
                       <div><dt>Reviewers</dt><dd>{actor.reviewApprovals} of 2 approved</dd></div>
                     </dl>
-                    <a className="button button-outline" href={`${sourceUrl}&t=${actor.startSeconds}s`} target="_blank" rel="noreferrer">Review at {actor.timestampStart} ↗</a>
+                    <div className="actor-card-actions">
+                      <Link className="button button-primary" href={`/events/jantar-mantar-july-20/documented-actors/${actor.id.toLowerCase()}`}>Open evidence record →</Link>
+                      <a className="button button-outline" href={`${sourceUrl}&t=${actor.startSeconds}s`} target="_blank" rel="noreferrer">Review at {actor.timestampStart} ↗</a>
+                    </div>
                   </div>
                 </article>
               ))}
