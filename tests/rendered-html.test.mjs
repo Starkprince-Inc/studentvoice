@@ -40,10 +40,13 @@ test("protects Evidence Control and renders it for an allowlisted reviewer", asy
   const html = await reviewer.text();
   assert.match(html, /Evidence control/i);
   assert.match(html, /Anonymous person profiles/i);
-  assert.match(html, /Unlinked frame inbox/i);
+  assert.match(html, /Every defensible person sequence/i);
+  assert.match(html, /Profile #(?:<!-- -->)?07/i);
   assert.match(html, /Open person profile/i);
+  assert.match(html, /Not every frame should become a person profile/i);
   assert.match(html, /Save private identity suggestion/i);
   assert.match(html, /NO BIOMETRIC MATCHING/i);
+  assert.doesNotMatch(html, /Unlinked frame inbox/i);
 });
 
 test("protects and renders a profile-centric private evidence page", async () => {
@@ -60,9 +63,30 @@ test("protects and renders a profile-centric private evidence page", async () =>
   assert.match(html, /P0038/i);
   assert.match(html, /P0039/i);
   assert.match(html, /P0040/i);
-  assert.match(html, /Attach more frames/i);
+  assert.match(html, /Open all profiles/i);
   assert.match(html, /Attach a proposed name to this profile/i);
   assert.match(html, /not a biometric or real-world identification/i);
+});
+
+test("renders expanded anonymous profiles from manually reviewed adjacent sequences", async () => {
+  const reviewerHeaders = { accept: "text/html", "oai-authenticated-user-email": "reviewer@example.test" };
+  const [contactProfile, vehicleProfile] = await Promise.all([
+    appRequest("/review/profiles/SV-SAM-U06", { headers: reviewerHeaders }),
+    appRequest("/review/profiles/SV-SAM-U09", { headers: reviewerHeaders }),
+  ]);
+  assert.equal(contactProfile.status, 200);
+  assert.equal(vehicleProfile.status, 200);
+  const contactHtml = await contactProfile.text();
+  const vehicleHtml = await vehicleProfile.text();
+  assert.match(contactHtml, /yellow barricade/i);
+  assert.match(contactHtml, /P0034/i);
+  assert.match(contactHtml, /P0035/i);
+  assert.match(contactHtml, /P0036/i);
+  assert.match(vehicleHtml, /riot-control vehicle/i);
+  assert.match(vehicleHtml, /Attached frames[\s\S]*?10/i);
+  assert.match(vehicleHtml, /P0139/i);
+  assert.match(vehicleHtml, /P0148/i);
+  assert.match(vehicleHtml, /does not establish the equipment type/i);
 });
 
 test("renders the case file with explicit uncertainty", async () => {

@@ -251,6 +251,10 @@ button, input, textarea, select { font: inherit; }
 .review-profile-card-body dt, .review-profile-facts dt { color: var(--muted); font-size: .57rem; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
 .review-profile-card-body dd, .review-profile-facts dd { margin: 6px 0 0; font: 900 .72rem Consolas, monospace; }
 .review-focus { border-left: 4px solid var(--acid); background: var(--ink); color: var(--paper); padding: 11px 14px; font-size: .76rem; }
+.review-context-archive { display: grid; grid-template-columns: .8fr 1.2fr; gap: 54px; border-block: 1px solid var(--line); margin: 66px 0; padding: 42px 0; align-items: start; }
+.review-context-archive h2 { font: 500 clamp(2rem, 4vw, 3.5rem)/1 Georgia, serif; letter-spacing: -.045em; margin: 10px 0 0; }
+.review-context-archive > p { color: var(--muted); line-height: 1.65; margin: 0; }
+.review-context-archive > p strong { display: block; color: var(--signal); font: 700 clamp(2.8rem, 6vw, 5rem)/1 Georgia, serif; margin-bottom: 12px; }
 .review-toolbar { display: flex; align-items: end; justify-content: space-between; gap: 28px; margin: 62px 0 24px; }
 .review-toolbar h2, .review-identity-section h2 { font: 500 clamp(2.2rem, 4vw, 3.8rem)/1 Georgia, serif; letter-spacing: -.045em; margin: 10px 0 0; }
 .review-filter, .review-artifact-body label, .review-identity-form label { display: grid; gap: 7px; font-size: .7rem; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; }
@@ -315,6 +319,7 @@ button, input, textarea, select { font: inherit; }
   .review-profile-card { grid-template-columns: 1fr; }
   .review-profile-card-image { min-height: 260px; }
   .review-profile-overview, .review-profile-identity { grid-template-columns: 1fr; }
+  .review-context-archive { grid-template-columns: 1fr; }
   .review-identity-section { grid-template-columns: 1fr; }
 }
 

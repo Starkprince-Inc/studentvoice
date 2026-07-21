@@ -37,7 +37,7 @@ export function ProfileReviewDetail({ actor, profileNumber }: { actor: Documente
     const response = await fetch(`/api/review/profiles/${actor.id}`, { cache: "no-store" });
     const payload = await response.json() as { artifacts?: Artifact[]; identitySuggestions?: IdentitySuggestion[]; error?: string };
     if (!response.ok) { setMessage(payload.error ?? "Unable to load this profile."); return; }
-    if (payload.artifacts?.length) setArtifacts(payload.artifacts);
+    setArtifacts(payload.artifacts ?? []);
     setSuggestions(payload.identitySuggestions ?? []);
   }, [actor.id]);
 
@@ -47,7 +47,7 @@ export function ProfileReviewDetail({ actor, profileNumber }: { actor: Documente
       .then(async (response) => ({ response, payload: await response.json() as { artifacts?: Artifact[]; identitySuggestions?: IdentitySuggestion[]; error?: string } }))
       .then(({ response, payload }) => {
         if (!response.ok) { setMessage(payload.error ?? "Unable to load this profile."); return; }
-        if (payload.artifacts?.length) setArtifacts(payload.artifacts);
+        setArtifacts(payload.artifacts ?? []);
         setSuggestions(payload.identitySuggestions ?? []);
       })
       .catch((error: unknown) => {
@@ -76,10 +76,10 @@ export function ProfileReviewDetail({ actor, profileNumber }: { actor: Documente
     </section>
 
     <section className="review-profile-evidence" aria-labelledby="profile-evidence-heading">
-      <div className="review-profile-section-head"><div><p className="eyebrow">Linked evidence</p><h2 id="profile-evidence-heading">Every reviewed instance attached to this person record.</h2><p>Cards are ordered by source time. Context frames and candidate-action frames remain distinct so the interface does not overstate what any still proves.</p></div><Link className="button button-primary" href={`/review?subject=${actor.id}#frame-inbox`}>Attach more frames</Link></div>
+      <div className="review-profile-section-head"><div><p className="eyebrow">Linked evidence</p><h2 id="profile-evidence-heading">Every reviewed instance attached to this person record.</h2><p>Cards are ordered by source time. Context frames and candidate-action frames remain distinct so the interface does not overstate what any still proves.</p></div><Link className="button button-primary" href="/review">Open all profiles</Link></div>
       {message ? <p className="review-message" role="status">{message}</p> : null}
       <div className="review-profile-evidence-grid">{artifacts.map((artifact, index) => <article className="profile-evidence-card" key={artifact.id}><div className="review-frame"><img src={`/api/review/artifacts/${artifact.id}/image`} alt={`Private evidence frame ${artifact.id} at ${artifact.timestamp}`} loading={index < 2 ? "eager" : "lazy"} /><span>{formatRelation(artifact.relation)}</span></div><div className="profile-evidence-body"><div className="review-artifact-title"><strong>{artifact.id}</strong><time>{artifact.timestamp}</time></div><h3>{artifact.relation === "candidate_action" ? "Conduct under review" : "Sequence context"}</h3><p>{artifact.observation ?? "No reviewer observation has been saved."}</p><p className="profile-evidence-limit"><strong>What this does not establish:</strong> {artifact.continuityLimit ?? actor.limits}</p><p className="review-hash">SHA-256 {artifact.sha256}</p><div className="review-card-actions"><button className="button button-outline" disabled={busyId === artifact.id} onClick={() => removeArtifact(artifact, false)}>Remove from profile</button><button className="button button-outline" disabled={busyId === artifact.id} onClick={() => removeArtifact(artifact, true)}>Dismiss artifact</button></div></div></article>)}</div>
-      {!artifacts.length ? <div className="notice">No active frames are attached. Return to the unlinked frame inbox to map evidence to this profile.</div> : null}
+      {!artifacts.length ? <div className="notice">No active frames are attached to this profile. The original derivatives remain preserved in the private scene archive.</div> : null}
     </section>
 
     <ProfileIdentityForm actorId={actor.id} suggestions={suggestions} onSaved={load} setMessage={setMessage} />

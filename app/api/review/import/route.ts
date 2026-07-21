@@ -1,3 +1,4 @@
+import { documentedActors } from "../../../data";
 import { ensureReviewSchema, getEvidenceBucket, getReviewDb, tokenMatches } from "../../../review/store";
 
 export const dynamic = "force-dynamic";
@@ -10,13 +11,13 @@ type ManifestItem = {
   source_series?: string;
 };
 
-const reviewedProfileLinks: Record<string, { subjectId: string; relation: string; observation: string }> = {
-  "SV-SAM-P0038": { subjectId: "SV-SAM-U01", relation: "before_context", observation: "Multiple uniformed personnel and protesters occupy the same narrow dispersal corridor immediately before the selected frame." },
-  "SV-SAM-P0039": { subjectId: "SV-SAM-U01", relation: "candidate_action", observation: "A uniformed subject appears with a baton raised during the crowd movement." },
-  "SV-SAM-P0040": { subjectId: "SV-SAM-U01", relation: "after_context", observation: "Baton-bearing personnel continue moving through the same corridor half a second later." },
-  "SV-SAM-P0041": { subjectId: "SV-SAM-U04", relation: "candidate_action", observation: "A green-helmeted uniformed subject appears to hold a baton above shoulder height." },
-  "SV-SAM-P0042": { subjectId: "SV-SAM-U04", relation: "after_context", observation: "The green-helmeted subject remains visible in the adjacent dispersal scene." },
-};
+const reviewedProfileLinks: Record<string, { subjectId: string; relation: string; observation: string }> = Object.fromEntries(
+  documentedActors.flatMap((actor) => (actor.evidenceFrames ?? []).map((frame) => [frame.id, {
+    subjectId: actor.id,
+    relation: frame.relation,
+    observation: frame.observation,
+  }])),
+);
 
 export async function POST(request: Request) {
   const authorization = request.headers.get("authorization");
