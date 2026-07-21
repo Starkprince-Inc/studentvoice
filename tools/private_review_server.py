@@ -15,6 +15,7 @@ import os
 import secrets
 import threading
 import time
+from datetime import UTC, datetime
 from http import HTTPStatus
 from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -24,6 +25,7 @@ from urllib.parse import unquote, urlparse
 
 COOKIE_NAME = "studentvoice_review"
 KEY_HASH_ENV = "STUDENTVOICE_REVIEW_KEY_HASH"
+STATE_FILE = ".review-state.json"
 
 
 def _digest(value: str) -> str:
@@ -101,6 +103,9 @@ main{{width:min(1120px,92vw);margin:55px auto 90px}} h1{{font:500 clamp(42px,7vw
 article{{border:1px solid var(--line);background:#fffdf7;padding:18px}} img{{width:100%;height:auto;display:block;background:var(--ink)}}
 h2{{font:600 25px Georgia,serif;margin:18px 0 8px}} code{{font-size:12px;overflow-wrap:anywhere}} .meta{{color:var(--muted);font-size:13px;line-height:1.55}}
 .button,button{{display:inline-block;border:0;background:var(--ink);color:white;padding:12px 16px;font-weight:800;text-decoration:none;cursor:pointer}}
+.button-row{{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}} .dismiss{{background:#8d2f23}} .restore{{background:#2f6b5f}}
+.section-head{{display:flex;justify-content:space-between;align-items:end;margin-top:54px;border-top:3px solid var(--ink);padding-top:24px}} .section-head h2{{font-size:34px;margin:0}}
+.dismissed-card{{opacity:.72}} .dismissed-card img{{filter:grayscale(1)}}
 .login{{max-width:560px;margin:13vh auto;border:1px solid var(--line);background:white;padding:32px}} input{{width:100%;padding:13px;border:1px solid var(--line);margin:12px 0 18px;font:inherit}}
 .warning{{border-left:5px solid var(--acid);background:var(--ink);color:white;padding:16px;line-height:1.5;margin:28px 0}}
 @media(max-width:600px){{header{{align-items:flex-start;gap:12px}}}}
@@ -126,6 +131,46 @@ h2{{font:600 25px Georgia,serif;margin:18px 0 8px}} code{{font-size:12px;overflo
                 "Set-Cookie",
                 f"{COOKIE_NAME}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0",
             )
+            self.end_headers()
+            return
+        if path in {"/dismiss", "/restore"}:
+            if not self._authenticated():
+                self._login_page("This review session has expired." if self._expired() else "")
+                return
+            try:
+                length = min(int(self.headers.get("Content-Length", "0")), 4096)
+            except ValueError:
+                length = 0
+            payload = self.rfile.read(length).decode("utf-8", errors="replace")
+            from urllib.parse import parse_qs
+
+            relative = parse_qs(payload).get("artifact", [""])[0]
+            requested = (self.server.artifact_root / relative).resolve()
+            root = self.server.artifact_root.resolve()
+            if (
+                not relative
+                or requested == root
+                or root not in requested.parents
+                or not requested.is_file()
+                or requested.name in {"manifest.json", STATE_FILE}
+            ):
+                self.send_error(HTTPStatus.BAD_REQUEST)
+                return
+            state = self._read_state()
+            dismissed = state.setdefault("dismissed", {})
+            now = datetime.now(UTC).isoformat()
+            if path == "/dismiss":
+                dismissed[relative] = {"dismissed_at": now}
+                action = "dismissed"
+            else:
+                dismissed.pop(relative, None)
+                action = "restored"
+            state.setdefault("audit", []).append(
+                {"action": action, "artifact": relative, "timestamp": now}
+            )
+            self._write_state(state)
+            self._headers(HTTPStatus.SEE_OTHER, "text/plain; charset=utf-8")
+            self.send_header("Location", "/")
             self.end_headers()
             return
         if path != "/login" or self._expired():
@@ -164,34 +209,82 @@ h2{{font:600 25px Georgia,serif;margin:18px 0 8px}} code{{font-size:12px;overflo
             return
         self.send_error(HTTPStatus.NOT_FOUND)
 
+    def _read_state(self) -> dict[str, object]:
+        path = self.server.artifact_root / STATE_FILE
+        if not path.exists():
+            return {"dismissed": {}, "audit": []}
+        try:
+            value = json.loads(path.read_text("utf-8"))
+            return value if isinstance(value, dict) else {"dismissed": {}, "audit": []}
+        except (OSError, json.JSONDecodeError):
+            return {"dismissed": {}, "audit": []}
+
+    def _write_state(self, state: dict[str, object]) -> None:
+        path = self.server.artifact_root / STATE_FILE
+        temporary = path.with_suffix(".tmp")
+        temporary.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
+        temporary.replace(path)
+
+    def _card(self, path: Path, dismissed: bool, digest_by_file: dict[str, str]) -> str:
+        relative = path.relative_to(self.server.artifact_root).as_posix()
+        escaped = html.escape(relative, quote=True)
+        href = "/artifact/" + escaped
+        mime, _ = mimetypes.guess_type(path.name)
+        preview = (
+            f'<a href="{href}" target="_blank"><img loading="lazy" src="{href}" alt="Private review derivative {escaped}"></a>'
+            if mime and mime.startswith("image/")
+            else ""
+        )
+        digest = digest_by_file.get(relative) or hashlib.sha256(path.read_bytes()).hexdigest()
+        action = "restore" if dismissed else "dismiss"
+        label = "Restore to queue" if dismissed else "Dismiss from queue"
+        action_class = "restore" if dismissed else "dismiss"
+        control = "" if path.name == "manifest.json" else (
+            f'<form method="post" action="/{action}"><input type="hidden" name="artifact" value="{escaped}">'
+            f'<button class="{action_class}" type="submit">{label}</button></form>'
+        )
+        card_class = "dismissed-card" if dismissed else ""
+        return (
+            f'<article class="{card_class}">{preview}<h2>{escaped}</h2>'
+            f'<p class="meta">{_human_size(path.stat().st_size)}<br>SHA-256: <code>{digest}</code></p>'
+            f'<div class="button-row"><a class="button" href="{href}" target="_blank">Open artifact</a>{control}</div></article>'
+        )
+
     def _index(self) -> None:
         files = sorted(
             path
             for path in self.server.artifact_root.rglob("*")
             if path.is_file() and not path.name.startswith(".")
         )
-        cards: list[str] = []
-        for path in files:
-            relative = path.relative_to(self.server.artifact_root).as_posix()
-            escaped = html.escape(relative)
-            href = "/artifact/" + escaped
-            mime, _ = mimetypes.guess_type(path.name)
-            preview = (
-                f'<a href="{href}" target="_blank"><img src="{href}" alt="Private review derivative {escaped}"></a>'
-                if mime and mime.startswith("image/")
-                else ""
-            )
-            digest = hashlib.sha256(path.read_bytes()).hexdigest()
-            cards.append(
-                f"<article>{preview}<h2>{escaped}</h2>"
-                f'<p class="meta">{_human_size(path.stat().st_size)}<br>SHA-256: <code>{digest}</code></p>'
-                f'<a class="button" href="{href}" target="_blank">Open artifact</a></article>'
-            )
+        state = self._read_state()
+        dismissed_map = state.get("dismissed", {})
+        dismissed_names = set(dismissed_map) if isinstance(dismissed_map, dict) else set()
+        manifest = {}
+        manifest_path = self.server.artifact_root / "manifest.json"
+        if manifest_path.exists():
+            try:
+                manifest = json.loads(manifest_path.read_text("utf-8"))
+            except (OSError, json.JSONDecodeError):
+                pass
+        digest_by_file = {
+            str(item.get("derivative_file")): str(item.get("sha256"))
+            for item in manifest.get("items", [])
+            if isinstance(item, dict) and item.get("derivative_file") and item.get("sha256")
+        }
+        active = [path for path in files if path.relative_to(self.server.artifact_root).as_posix() not in dismissed_names]
+        dismissed = [path for path in files if path.relative_to(self.server.artifact_root).as_posix() in dismissed_names]
+        active_cards = [self._card(path, False, digest_by_file) for path in active]
+        dismissed_cards = [self._card(path, True, digest_by_file) for path in dismissed]
         minutes = max(0, int((self.server.expires_at - time.time()) / 60))
+        dismissed_section = (
+            f'<div class="section-head"><h2>Dismissed proposals</h2><span>{len(dismissed)} reversible</span></div><section class="grid">{"".join(dismissed_cards)}</section>'
+            if dismissed_cards
+            else ""
+        )
         content = f"""<main><p>PROTECTED EVIDENCE WORKSPACE</p><h1>Private review artifacts</h1>
-<p class="lede">{len(files)} files available from the local review workspace. Session expires in approximately {minutes} minutes.</p>
+<p class="lede">{len(active)} active files and {len(dismissed)} dismissed proposals. Session expires in approximately {minutes} minutes.</p>
 <div class="warning">Do not redistribute these files or use the anonymous boxes as identity evidence. Public release still requires rights clearance and editorial approval.</div>
-<form method="post" action="/logout"><button type="submit">Lock portal</button></form><section class="grid">{''.join(cards)}</section></main>"""
+<form method="post" action="/logout"><button type="submit">Lock portal</button></form><section class="grid">{''.join(active_cards)}</section>{dismissed_section}</main>"""
         self._write_html(HTTPStatus.OK, self._page("Artifacts", content))
 
     def _artifact(self, relative: str) -> None:
