@@ -9,6 +9,7 @@ export function SiteHeader() {
         <nav className="main-nav" aria-label="Primary">
           <Link href="/events/jantar-mantar-july-20">Evidence</Link>
           <Link href="/events/jantar-mantar-july-20/documented-actors">Actors</Link>
+          <Link className="review-nav-link" href="/review">Evidence control</Link>
           <Link href="/methodology">Methodology</Link>
           <Link href="/methodology#safety">Source safety</Link>
         </nav>

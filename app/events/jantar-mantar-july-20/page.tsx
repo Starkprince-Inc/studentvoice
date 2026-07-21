@@ -40,7 +40,7 @@ export default function EventPage() {
 
             <section className="case-section" id="actors">
               <p className="eyebrow">Actor and conduct review</p><h2>Anonymous profiles from the Samdish report</h2>
-              <div className="notice">Five timestamped review records now document uniformed personnel, riot-control activity, and an allegation involving people in civilian clothing. No face matching or identity inference is used.</div>
+              <div className="notice">Six timestamped review records now document uniformed personnel, riot-control activity, and an allegation involving people in civilian clothing. No face matching or identity inference is used.</div>
               <Link className="button button-primary" href="/events/jantar-mantar-july-20/documented-actors">Open documented actors →</Link>
             </section>
 

@@ -126,6 +126,12 @@ export default async function DocumentedActorPage({ params }: { params: Promise<
               <p>A private identity suggestion may cite a readable badge or nameplate, official deployment record, court filing, or reliable independent reporting. A face match, resemblance, clothing, or crowd guess is rejected.</p>
               {actor.identityEvidenceOpen ? <Link className="button button-primary identity-submit-button" href={`/submit?mode=identity&subject=${actor.id}`}>Submit identity evidence</Link> : null}
             </div>
+            <div className="profile-rail-card review-entry-card">
+              <span className="source-type">AUTHORIZED REVIEWERS</span>
+              <h3>Open attached frames</h3>
+              <p>Sign in to Evidence Control to view private derivatives, attach adjacent frames to this anonymous profile, write observations, or dismiss false leads.</p>
+              <Link className="button button-outline" href="/review">Open Evidence Control →</Link>
+            </div>
           </aside>
 
           <section className="profile-accountability" aria-labelledby="accountability-title">

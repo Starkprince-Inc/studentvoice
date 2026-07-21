@@ -1,12 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-async function appRequest(path = "/", init = {}) {
+async function appRequest(path = "/", init = {}, envOverrides = {}) {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-${path}`);
   const { default: handler } = await import(workerUrl.href);
   const fetch = typeof handler === "function" ? handler : handler.fetch.bind(handler);
-  return fetch(new Request(`http://localhost${path}`, init), { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } }, { waitUntil() {}, passThroughOnException() {} });
+  const runtimeEnv = { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) }, REVIEWER_EMAILS: "reviewer@example.test", ...envOverrides };
+  globalThis.__STUDENTVOICE_ENV__ = runtimeEnv;
+  return fetch(new Request(`http://localhost${path}`, init), runtimeEnv, { waitUntil() {}, passThroughOnException() {} });
 }
 
 async function render(path = "/") {
@@ -24,7 +26,22 @@ test("renders the public evidence homepage", async () => {
   assert.match(html, /No biometric identification/i);
   assert.match(html, /github\.com\/Starkprince-Inc\/studentvoice/i);
   assert.match(html, /GitHub/i);
+  assert.match(html, /Evidence control/i);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
+});
+
+test("protects Evidence Control and renders it for an allowlisted reviewer", async () => {
+  const anonymous = await appRequest("/review", { headers: { accept: "text/html" }, redirect: "manual" });
+  assert.equal(anonymous.status, 307);
+  assert.match(anonymous.headers.get("location") ?? "", /signin-with-chatgpt/i);
+
+  const reviewer = await appRequest("/review", { headers: { accept: "text/html", "oai-authenticated-user-email": "reviewer@example.test" } });
+  assert.equal(reviewer.status, 200);
+  const html = await reviewer.text();
+  assert.match(html, /Evidence control/i);
+  assert.match(html, /Attach frames to anonymous profiles/i);
+  assert.match(html, /Save private identity suggestion/i);
+  assert.match(html, /NO BIOMETRIC MATCHING/i);
 });
 
 test("renders the case file with explicit uncertainty", async () => {
