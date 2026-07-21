@@ -32,7 +32,7 @@ export default function DocumentedActorsPage() {
             <div>
               <p className="eyebrow">Primary linked source</p>
               <h2 id="source-video-title">Review the published footage in context</h2>
-              <p>Timestamp links below open the original upload. StudentVoice has not downloaded or frame-processed this third-party video. Still images remain withheld until the creator supplies authorization or a rights-cleared original.</p>
+              <p>Timestamp links below open the creator&apos;s upload. A submitter-provided working copy has been frame-processed inside the protected review workspace. Private derivatives and the original remain out of GitHub and the public site until rights and editorial approvals are recorded.</p>
             </div>
             <div className="video-frame">
               <iframe
@@ -53,9 +53,9 @@ export default function DocumentedActorsPage() {
             <div className="actor-grid">
               {documentedActors.map((actor) => (
                 <article className="actor-card" id={actor.id} key={actor.id}>
-                  <div className="actor-visual" aria-label="No public frame is available">
+                  <div className={`actor-visual ${actor.privateReviewFrame ? "actor-visual-ready" : ""}`} aria-label={actor.privateReviewFrame ? "Private review frame prepared; public image withheld" : "No public frame is available"}>
                     <span className="actor-code">{actor.id.replace("SV-SAM-", "")}</span>
-                    <span className="frame-withheld">FRAME WITHHELD<br />RIGHTS REVIEW</span>
+                    <span className="frame-withheld">{actor.privateReviewFrame ? <>PRIVATE BOX READY<br />{actor.privateReviewFrame.timestamp} · PUBLIC IMAGE WITHHELD</> : <>FRAME WITHHELD<br />RIGHTS REVIEW</>}</span>
                   </div>
                   <div className="actor-card-body">
                     <div className="actor-card-topline">

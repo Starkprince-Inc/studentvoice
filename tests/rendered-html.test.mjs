@@ -41,6 +41,7 @@ test("renders anonymous actor records without biometric identification", async (
   assert.match(html, /Documented actors/i);
   assert.match(html, /SV-SAM-U01/i);
   assert.match(html, /FRAME WITHHELD/i);
+  assert.match(html, /PRIVATE BOX READY/i);
   assert.match(html, /0 \/ 2 REVIEW APPROVALS/i);
   assert.match(html, /face, resemblance, clothing, or crowd suggestion is never enough/i);
   assert.match(html, /Open evidence record/i);
@@ -52,8 +53,11 @@ test("renders a separate evidence subpage for an anonymous actor", async () => {
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /ANONYMOUS EVIDENCE RECORD/i);
-  assert.match(html, /PUBLIC FACE CROP WITHHELD/i);
-  assert.match(html, /Face-box status/i);
+  assert.match(html, /PRIVATE REVIEW FRAME READY/i);
+  assert.match(html, /Anonymous subject-box status/i);
+  assert.match(html, /14:28\.5/i);
+  assert.match(html, /382, 105, 568, 536/i);
+  assert.match(html, /Derivative SHA-256/i);
   assert.match(html, /Right of reply/i);
   assert.match(html, /Open original at/i);
   assert.doesNotMatch(html, /verified identity/i);

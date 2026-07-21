@@ -1,7 +1,7 @@
 export type ClaimStatus = "unreviewed" | "under_review" | "corroborated" | "contested" | "refuted" | "retracted";
 
 export const sources = [
-  { id: "samdish", publisher: "Unfiltered by Samdish", type: "Primary video", url: "https://www.youtube.com/watch?v=6MTXCAaOy3o", title: "Good Afternoon India — Dekh Lo Humaara 'Naya Bharat'", note: "56-minute ground report published July 20, 2026. Third-party link; no original file has been acquired." },
+  { id: "samdish", publisher: "Unfiltered by Samdish", type: "Primary video", url: "https://www.youtube.com/watch?v=6MTXCAaOy3o", title: "Good Afternoon India — Dekh Lo Humaara 'Naya Bharat'", note: "56-minute ground report published July 20, 2026. A submitter-provided working copy was used for private frame review; publication rights remain pending and the original is access-controlled." },
   { id: "ap", publisher: "Associated Press", type: "Wire report", url: "https://apnews.com/article/india-cockroach-janta-party-sonam-wangchuk-hunger-strike-cbeb4773e89d67250f0bcad1670fcd38", title: "Thousands gather to attempt a march to Parliament", note: "On-ground account and photographs of baton and tear-gas use." },
   { id: "ht", publisher: "Hindustan Times", type: "Chronology", url: "https://www.hindustantimes.com/india-news/jantar-mantar-cjp-protest-a-blow-by-blow-account-of-what-happened-on-monday-delhi-101784604090492-amp.html", title: "A blow-by-blow account of what happened", note: "Time-ordered reporting across Jantar Mantar and central Delhi." },
   { id: "pti", publisher: "PTI / ThePrint", type: "Official account", url: "https://theprint.in/india/118-police-personnel-injured-70-protesters-detained-as-cjp-protest-turns-violent-in-delhi/2991722/", title: "Delhi Police statement on injuries and detentions", note: "Police account alleging violence and property damage." },
@@ -46,6 +46,13 @@ export type DocumentedActor = {
   startSeconds: number;
   action: string;
   limits: string;
+  privateReviewFrame?: {
+    timestamp: string;
+    timestampSeconds: number;
+    subjectBox: [number, number, number, number];
+    derivativeSha256: string;
+    note: string;
+  };
 };
 
 export const documentedActors: DocumentedActor[] = [
@@ -67,11 +74,18 @@ export const documentedActors: DocumentedActor[] = [
     identityState: "anonymous_subject",
     reviewStatus: "under_review",
     reviewApprovals: 0,
-    timestampStart: "14:18",
-    timestampEnd: "14:25",
-    startSeconds: 858,
-    action: "Footage appears to show baton use during a confrontation with protesters.",
-    limits: "No individual is named or linked to another clip. The necessity, sequence, and person responsible require frame-level review of an authorized original.",
+    timestampStart: "14:28",
+    timestampEnd: "14:29",
+    startSeconds: 868,
+    action: "A reviewed frame shows an anonymous uniformed subject holding a raised baton during a crowded dispersal sequence.",
+    limits: "The still does not show contact and is not a finding of brutality, identity, necessity, or proportionality. The surrounding sequence and a second source require independent review.",
+    privateReviewFrame: {
+      timestamp: "14:28.5",
+      timestampSeconds: 868.5,
+      subjectBox: [382, 105, 568, 536],
+      derivativeSha256: "2ad296001fce54a9a31cf9360ab4690c7c6cc6bbf28bac582d28bd145049c6ac",
+      note: "Background and visible faces are obscured in the private derivative. The box is a manual within-video marker, not a biometric match.",
+    },
   },
   {
     id: "SV-SAM-U02",
@@ -91,11 +105,18 @@ export const documentedActors: DocumentedActor[] = [
     identityState: "anonymous_subject",
     reviewStatus: "under_review",
     reviewApprovals: 0,
-    timestampStart: "24:32",
-    timestampEnd: "26:07",
-    startSeconds: 1472,
-    action: "The report documents baton use, a Vajra riot-control vehicle, and apparent tear-gas deployment during dispersal.",
-    limits: "This record describes a scene, not a finding against a particular person. Individual responsibility has not been established.",
+    timestampStart: "37:10",
+    timestampEnd: "37:11",
+    startSeconds: 2230,
+    action: "A reviewed frame shows personnel operating equipment mounted on a riot-control vehicle during dispersal.",
+    limits: "The frame does not by itself establish the equipment type, whether it was discharged, identity, or individual responsibility. This remains a contextual scene record.",
+    privateReviewFrame: {
+      timestamp: "37:10.5",
+      timestampSeconds: 2230.5,
+      subjectBox: [440, 78, 720, 285],
+      derivativeSha256: "fdd3b174d4fc2704215947f820213d77bccd953afb2f0f8ceccddaeab8ed33b3",
+      note: "Exposed faces are obscured in the private derivative. The box marks equipment operation for review and does not assert identity.",
+    },
   },
   {
     id: "SV-SAM-U03",

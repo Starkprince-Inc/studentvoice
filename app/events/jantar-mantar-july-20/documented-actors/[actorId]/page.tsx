@@ -41,14 +41,20 @@ export default async function DocumentedActorPage({ params }: { params: Promise<
         <div className="shell actor-profile-layout">
           <section className="actor-profile-media" aria-labelledby="source-window-title">
             <div className="profile-frame-status">
-              <div className="actor-visual" aria-label="Public face crop withheld pending rights review">
+              <div className={`actor-visual ${actor.privateReviewFrame ? "actor-visual-ready" : ""}`} aria-label={actor.privateReviewFrame ? "Private anonymous subject box prepared; public image withheld" : "Public face crop withheld pending rights review"}>
                 <span className="actor-code">{actor.id.replace("SV-SAM-", "")}</span>
-                <span className="frame-withheld">PUBLIC FACE CROP WITHHELD<br />AUTHORIZED ORIGINAL REQUIRED</span>
+                <span className="frame-withheld">{actor.privateReviewFrame ? <>PRIVATE REVIEW FRAME READY<br />PUBLIC IMAGE WITHHELD</> : <>PUBLIC FACE CROP WITHHELD<br />AUTHORIZED ORIGINAL REQUIRED</>}</span>
               </div>
               <div>
-                <p className="eyebrow">Face-box status</p>
-                <h2>Not yet created</h2>
-                <p>A private reviewer may draw a face box only on an authorized, rights-cleared original. It is an anonymous within-video aid for redaction and review—not facial recognition or identity evidence.</p>
+                <p className="eyebrow">Anonymous subject-box status</p>
+                <h2>{actor.privateReviewFrame ? "Private review frame created" : "Not yet created"}</h2>
+                {actor.privateReviewFrame ? (
+                  <>
+                    <p><strong>Reviewed timestamp:</strong> {actor.privateReviewFrame.timestamp}<br /><strong>Box coordinates:</strong> {actor.privateReviewFrame.subjectBox.join(", ")} on the 1024 × 576 working frame.</p>
+                    <p>{actor.privateReviewFrame.note}</p>
+                    <p className="hash-receipt"><strong>Derivative SHA-256:</strong> <code>{actor.privateReviewFrame.derivativeSha256}</code></p>
+                  </>
+                ) : <p>A private reviewer may draw a subject box only on an authorized working copy. It is an anonymous within-video aid for redaction and review—not facial recognition or identity evidence.</p>}
               </div>
             </div>
 
@@ -80,7 +86,7 @@ export default async function DocumentedActorPage({ params }: { params: Promise<
               <span className="source-type">PUBLICATION GATES</span>
               <ol className="gate-list">
                 <li><span className="gate-state gate-pending">Pending</span> Rights-cleared original or creator authorization</li>
-                <li><span className="gate-state gate-pending">Pending</span> Frame-level reviewer observation</li>
+                <li><span className={`gate-state ${actor.privateReviewFrame ? "gate-prepared" : "gate-pending"}`}>{actor.privateReviewFrame ? "Prepared" : "Pending"}</span> Frame-level reviewer observation</li>
                 <li><span className="gate-state gate-pending">0 / 2</span> Independent reviewer approvals</li>
                 <li><span className="gate-state gate-pending">Pending</span> Editor and legal review</li>
               </ol>
