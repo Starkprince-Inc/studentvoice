@@ -2,6 +2,8 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { documentedActors } from "../data";
 
 type Artifact = {
   id: string;
@@ -16,24 +18,58 @@ type Artifact = {
 };
 
 type Subject = { id: string; observedRole: string; identityEvidenceOpen: boolean };
+type Profile = {
+  profileNumber: number;
+  subjectId: string;
+  observedRole: string;
+  identityState: string;
+  reviewStatus: string;
+  action: string;
+  limits: string;
+  timestampStart: string;
+  timestampEnd: string;
+  representativeArtifactId: string | null;
+  expectedEvidenceCount: number;
+  evidenceCount: number;
+  actionCount: number;
+};
 type IdentitySuggestion = { id: string; subject_id: string; basis: string; proposedName: string; sourceUrl: string; explanation: string; submitted_by: string; state: string; created_at: string };
 type ReviewPayload = {
   artifacts: Artifact[];
   summary: { total: number; mapped: number; dismissed: number; unreviewed: number };
   subjects: Subject[];
+  profiles: Profile[];
   identitySuggestions: IdentitySuggestion[];
   reviewer: { displayName: string; email: string };
   paging: { offset: number; limit: number };
 };
 
 const emptySummary = { total: 0, mapped: 0, dismissed: 0, unreviewed: 0 };
+const fallbackProfiles: Profile[] = documentedActors
+  .filter((actor) => actor.identityEvidenceOpen && actor.evidenceFrames?.length)
+  .map((actor, index) => ({
+    profileNumber: index + 1,
+    subjectId: actor.id,
+    observedRole: actor.observedRole,
+    identityState: actor.identityState,
+    reviewStatus: actor.reviewStatus,
+    action: actor.action,
+    limits: actor.limits,
+    timestampStart: actor.timestampStart,
+    timestampEnd: actor.timestampEnd,
+    representativeArtifactId: actor.evidenceFrames?.find((frame) => frame.relation === "candidate_action")?.id ?? actor.evidenceFrames?.[0]?.id ?? null,
+    expectedEvidenceCount: actor.evidenceFrames?.length ?? 0,
+    evidenceCount: actor.evidenceFrames?.length ?? 0,
+    actionCount: actor.evidenceFrames?.filter((frame) => frame.relation === "candidate_action").length ?? 0,
+  }));
 
-export function ReviewControl() {
+export function ReviewControl({ initialSubjectId = "" }: { initialSubjectId?: string }) {
   const [data, setData] = useState<ReviewPayload | null>(null);
   const [status, setStatus] = useState("active");
   const [offset, setOffset] = useState(0);
   const [message, setMessage] = useState("Loading protected frame index…");
   const [busyId, setBusyId] = useState<string | null>(null);
+  const focusSubjectId = initialSubjectId;
 
   const load = useCallback(async () => {
     const response = await fetch(`/api/review/artifacts?status=${encodeURIComponent(status)}&offset=${offset}&limit=36`, { cache: "no-store" });
@@ -58,6 +94,7 @@ export function ReviewControl() {
     return () => controller.abort();
   }, [offset, status]);
   const summary = data?.summary ?? emptySummary;
+  const profiles = data?.profiles ?? fallbackProfiles;
 
   async function updateArtifact(artifact: Artifact, payload: Record<string, unknown>) {
     setBusyId(artifact.id);
@@ -76,14 +113,19 @@ export function ReviewControl() {
       <article><strong>{summary.dismissed}</strong><span>dismissed leads</span></article>
     </section>
 
-    <div className="review-toolbar">
-      <div><p className="eyebrow">Frame queue</p><h2>Attach frames to anonymous profiles</h2></div>
+    <section className="review-profile-gallery" aria-labelledby="profile-gallery-heading">
+      <div className="review-profile-section-head"><div><p className="eyebrow">Anonymous person profiles</p><h2 id="profile-gallery-heading">Review people first, then their linked evidence.</h2><p>Each card is a manual within-video person record. Open it to see the representative image, every attached instance, continuity limits, and private documentary identity controls.</p></div><span className="meta-chip">NO FACE RECOGNITION</span></div>
+      <div className="review-profile-grid">{profiles.map((profile) => <article className="review-profile-card" key={profile.subjectId}><Link className="review-profile-card-image" href={`/review/profiles/${profile.subjectId}`}>{profile.representativeArtifactId ? <img src={`/api/review/artifacts/${profile.representativeArtifactId}/image`} alt={`Representative private frame for anonymous profile ${profile.profileNumber}`} /> : null}<span>Profile #{String(profile.profileNumber).padStart(2, "0")}</span></Link><div className="review-profile-card-body"><div className="review-artifact-title"><strong>{profile.subjectId}</strong><span>{profile.identityState.replaceAll("_", " ")}</span></div><h3>{profile.observedRole}</h3><p>{profile.action}</p><dl><div><dt>Linked frames</dt><dd>{profile.evidenceCount || profile.expectedEvidenceCount}</dd></div><div><dt>Candidate actions</dt><dd>{profile.actionCount || 1}</dd></div><div><dt>Window</dt><dd>{profile.timestampStart}-{profile.timestampEnd}</dd></div></dl><Link className="button button-primary" href={`/review/profiles/${profile.subjectId}`}>Open person profile</Link></div></article>)}</div>
+    </section>
+
+    <div className="review-toolbar" id="frame-inbox">
+      <div><p className="eyebrow">Secondary review tool</p><h2>Unlinked frame inbox</h2><p>Use this queue to attach another frame to a profile or dismiss a false lead.</p>{focusSubjectId ? <p className="review-focus">Attaching to <strong>{focusSubjectId}</strong>. Profile selection is prefilled on unmapped frames.</p> : null}</div>
       <label className="review-filter">Show<select value={status} onChange={(event) => { setMessage("Loading protected frame index…"); setStatus(event.target.value); setOffset(0); }}><option value="active">Active</option><option value="unreviewed">Unreviewed</option><option value="mapped">Mapped</option><option value="dismissed">Dismissed</option><option value="all">All</option></select></label>
     </div>
 
     {message ? <p className="review-message" role="status">{message}</p> : null}
     <section className="review-artifact-grid" aria-label="Private frame artifacts">
-      {data?.artifacts.map((artifact) => <ArtifactCard key={artifact.id} artifact={artifact} subjects={data.subjects} busy={busyId === artifact.id} onUpdate={updateArtifact} />)}
+      {data?.artifacts.map((artifact) => <ArtifactCard key={artifact.id} artifact={artifact} subjects={data.subjects} suggestedSubjectId={focusSubjectId} busy={busyId === artifact.id} onUpdate={updateArtifact} />)}
     </section>
     <div className="review-pagination"><button className="button button-outline" disabled={offset === 0} onClick={() => { setMessage("Loading protected frame index…"); setOffset(Math.max(0, offset - 36)); }}>← Previous</button><span>{offset + 1}–{Math.min(offset + (data?.artifacts.length ?? 0), summary.total)} of {summary.total}</span><button className="button button-outline" disabled={!data || data.artifacts.length < 36} onClick={() => { setMessage("Loading protected frame index…"); setOffset(offset + 36); }}>Next →</button></div>
 
@@ -91,8 +133,9 @@ export function ReviewControl() {
   </div>;
 }
 
-function ArtifactCard({ artifact, subjects, busy, onUpdate }: { artifact: Artifact; subjects: Subject[]; busy: boolean; onUpdate: (artifact: Artifact, payload: Record<string, unknown>) => Promise<void> }) {
-  const [subjectId, setSubjectId] = useState(artifact.mapped_subject_id ?? "");
+function ArtifactCard({ artifact, subjects, suggestedSubjectId, busy, onUpdate }: { artifact: Artifact; subjects: Subject[]; suggestedSubjectId: string; busy: boolean; onUpdate: (artifact: Artifact, payload: Record<string, unknown>) => Promise<void> }) {
+  const safeSuggestedSubject = subjects.some((subject) => subject.id === suggestedSubjectId) ? suggestedSubjectId : "";
+  const [subjectId, setSubjectId] = useState(artifact.mapped_subject_id ?? safeSuggestedSubject);
   const [relation, setRelation] = useState(artifact.relation ?? "context_only");
   const [observation, setObservation] = useState(artifact.observation ?? "");
   return <article className={`review-artifact-card status-card-${artifact.status}`}>

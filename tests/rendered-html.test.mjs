@@ -39,9 +39,30 @@ test("protects Evidence Control and renders it for an allowlisted reviewer", asy
   assert.equal(reviewer.status, 200);
   const html = await reviewer.text();
   assert.match(html, /Evidence control/i);
-  assert.match(html, /Attach frames to anonymous profiles/i);
+  assert.match(html, /Anonymous person profiles/i);
+  assert.match(html, /Unlinked frame inbox/i);
+  assert.match(html, /Open person profile/i);
   assert.match(html, /Save private identity suggestion/i);
   assert.match(html, /NO BIOMETRIC MATCHING/i);
+});
+
+test("protects and renders a profile-centric private evidence page", async () => {
+  const anonymous = await appRequest("/review/profiles/SV-SAM-U01", { headers: { accept: "text/html" }, redirect: "manual" });
+  assert.equal(anonymous.status, 307);
+  assert.match(anonymous.headers.get("location") ?? "", /signin-with-chatgpt/i);
+
+  const reviewer = await appRequest("/review/profiles/SV-SAM-U01", { headers: { accept: "text/html", "oai-authenticated-user-email": "reviewer@example.test" } });
+  assert.equal(reviewer.status, 200);
+  const html = await reviewer.text();
+  assert.match(html, /Anonymous person profile #(?:<!-- -->)?01/i);
+  assert.match(html, /IDENTITY: NOT VERIFIED/i);
+  assert.match(html, /Every reviewed instance attached to this person record/i);
+  assert.match(html, /P0038/i);
+  assert.match(html, /P0039/i);
+  assert.match(html, /P0040/i);
+  assert.match(html, /Attach more frames/i);
+  assert.match(html, /Attach a proposed name to this profile/i);
+  assert.match(html, /not a biometric or real-world identification/i);
 });
 
 test("renders the case file with explicit uncertainty", async () => {

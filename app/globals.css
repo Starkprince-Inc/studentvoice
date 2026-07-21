@@ -233,6 +233,24 @@ button, input, textarea, select { font: inherit; }
 .review-summary article { background: var(--paper); padding: 24px; display: grid; gap: 8px; }
 .review-summary strong { color: var(--signal); font: 700 clamp(2.2rem, 5vw, 4rem)/1 Georgia, serif; }
 .review-summary span { font-size: .68rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.review-profile-gallery { padding: 68px 0 10px; }
+.review-profile-section-head { display: flex; align-items: end; justify-content: space-between; gap: 34px; margin-bottom: 26px; }
+.review-profile-section-head > div { max-width: 800px; }
+.review-profile-section-head h2, .review-profile-overview h2, .review-profile-evidence h2, .review-profile-identity h2 { font: 500 clamp(2.2rem, 4vw, 3.8rem)/1 Georgia, serif; letter-spacing: -.045em; margin: 10px 0 14px; }
+.review-profile-section-head p:last-child { color: var(--muted); line-height: 1.55; }
+.review-profile-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.review-profile-card { min-width: 0; border: 1px solid var(--line); background: var(--paper); display: grid; grid-template-columns: minmax(220px, .8fr) minmax(0, 1.2fr); }
+.review-profile-card-image { position: relative; min-height: 310px; background: var(--ink); overflow: hidden; text-decoration: none; }
+.review-profile-card-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.review-profile-card-image span, .review-profile-portrait span { position: absolute; left: 14px; bottom: 14px; background: var(--acid); color: var(--ink); padding: 8px 10px; font: 900 .7rem Consolas, monospace; text-transform: uppercase; }
+.review-profile-card-body { min-width: 0; padding: 24px; display: flex; flex-direction: column; align-items: start; }
+.review-profile-card-body h3 { font: 600 1.45rem/1.1 Georgia, serif; margin: 22px 0 12px; }
+.review-profile-card-body > p { color: var(--muted); font-size: .82rem; line-height: 1.55; }
+.review-profile-card-body dl, .review-profile-facts { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); border-block: 1px solid var(--line); margin: auto 0 20px; }
+.review-profile-card-body dl div, .review-profile-facts div { padding: 13px 8px 13px 0; }
+.review-profile-card-body dt, .review-profile-facts dt { color: var(--muted); font-size: .57rem; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
+.review-profile-card-body dd, .review-profile-facts dd { margin: 6px 0 0; font: 900 .72rem Consolas, monospace; }
+.review-focus { border-left: 4px solid var(--acid); background: var(--ink); color: var(--paper); padding: 11px 14px; font-size: .76rem; }
 .review-toolbar { display: flex; align-items: end; justify-content: space-between; gap: 28px; margin: 62px 0 24px; }
 .review-toolbar h2, .review-identity-section h2 { font: 500 clamp(2.2rem, 4vw, 3.8rem)/1 Georgia, serif; letter-spacing: -.045em; margin: 10px 0 0; }
 .review-filter, .review-artifact-body label, .review-identity-form label { display: grid; gap: 7px; font-size: .7rem; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; }
@@ -265,6 +283,22 @@ button, input, textarea, select { font: inherit; }
 .review-suggestions article > div { display: flex; justify-content: space-between; gap: 10px; }
 .review-suggestions article span { color: #2f6b5f; font: 800 .58rem Consolas, monospace; text-transform: uppercase; }
 .review-suggestions p, .review-suggestions a { font-size: .7rem; line-height: 1.45; }
+.review-profile-hero { background: var(--paper); }
+.review-profile-shell { padding-block: 55px 110px; }
+.review-profile-overview { display: grid; grid-template-columns: minmax(320px, .9fr) minmax(0, 1.1fr); gap: 46px; align-items: start; }
+.review-profile-portrait { position: relative; aspect-ratio: 4 / 3; background: var(--ink); overflow: hidden; box-shadow: 12px 12px 0 var(--acid); }
+.review-profile-portrait img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.review-profile-action { font-size: 1.08rem; line-height: 1.6; }
+.review-profile-overview .notice { margin: 24px 0; font-size: .82rem; }
+.review-profile-evidence { border-top: 4px solid var(--ink); margin-top: 78px; padding-top: 42px; }
+.review-profile-evidence-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.profile-evidence-card { min-width: 0; background: var(--paper); border: 1px solid var(--line); }
+.profile-evidence-body { padding: 22px; display: grid; gap: 13px; }
+.profile-evidence-body h3 { font: 600 1.5rem Georgia, serif; margin: 4px 0 0; }
+.profile-evidence-body > p { font-size: .84rem; line-height: 1.55; margin: 0; }
+.profile-evidence-limit { color: var(--muted); background: #e8e3d8; padding: 13px; }
+.review-profile-identity { border-top: 4px solid var(--ink); margin-top: 78px; padding-top: 42px; display: grid; grid-template-columns: .9fr 1.1fr; gap: 48px; align-items: start; }
+.review-profile-identity > div > p { color: var(--muted); line-height: 1.6; }
 
 @media (max-width: 900px) {
   .main-nav { display: none; }
@@ -278,6 +312,9 @@ button, input, textarea, select { font: inherit; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .profile-accountability { grid-column: auto; }
   .review-artifact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .review-profile-card { grid-template-columns: 1fr; }
+  .review-profile-card-image { min-height: 260px; }
+  .review-profile-overview, .review-profile-identity { grid-template-columns: 1fr; }
   .review-identity-section { grid-template-columns: 1fr; }
 }
 
@@ -308,6 +345,9 @@ button, input, textarea, select { font: inherit; }
   .sequence-frame-placeholder { min-height: 150px; }
   .review-summary { grid-template-columns: repeat(2, 1fr); }
   .review-toolbar { align-items: stretch; flex-direction: column; }
+  .review-profile-section-head { align-items: stretch; flex-direction: column; }
+  .review-profile-grid, .review-profile-evidence-grid { grid-template-columns: 1fr; }
+  .review-profile-card-body dl, .review-profile-facts { grid-template-columns: 1fr; }
   .review-artifact-grid { grid-template-columns: 1fr; }
   .review-pagination { flex-wrap: wrap; }
 }

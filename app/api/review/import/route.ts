@@ -10,6 +10,14 @@ type ManifestItem = {
   source_series?: string;
 };
 
+const reviewedProfileLinks: Record<string, { subjectId: string; relation: string; observation: string }> = {
+  "SV-SAM-P0038": { subjectId: "SV-SAM-U01", relation: "before_context", observation: "Multiple uniformed personnel and protesters occupy the same narrow dispersal corridor immediately before the selected frame." },
+  "SV-SAM-P0039": { subjectId: "SV-SAM-U01", relation: "candidate_action", observation: "A uniformed subject appears with a baton raised during the crowd movement." },
+  "SV-SAM-P0040": { subjectId: "SV-SAM-U01", relation: "after_context", observation: "Baton-bearing personnel continue moving through the same corridor half a second later." },
+  "SV-SAM-P0041": { subjectId: "SV-SAM-U04", relation: "candidate_action", observation: "A green-helmeted uniformed subject appears to hold a baton above shoulder height." },
+  "SV-SAM-P0042": { subjectId: "SV-SAM-U04", relation: "after_context", observation: "The green-helmeted subject remains visible in the adjacent dispersal scene." },
+};
+
 export async function POST(request: Request) {
   const authorization = request.headers.get("authorization");
   const suppliedToken = authorization?.startsWith("Bearer ") ? authorization.slice(7) : null;
@@ -34,10 +42,11 @@ export async function POST(request: Request) {
     if (!file) { missing.push(item.derivative_file); continue; }
     const key = `samdish/${item.derivative_file}`;
     await bucket.put(key, file.stream(), { httpMetadata: { contentType: "image/webp" }, customMetadata: { sha256: item.sha256, timestamp: item.timestamp, recordId: item.record_id } });
-    statements.push(db.prepare(`INSERT INTO review_artifacts (id, timestamp, derivative_key, sha256, source_series)
-      VALUES (?, ?, ?, ?, ?)
+    const reviewedLink = reviewedProfileLinks[item.record_id];
+    statements.push(db.prepare(`INSERT INTO review_artifacts (id, timestamp, derivative_key, sha256, source_series, status, mapped_subject_id, relation, observation, updated_by)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(id) DO UPDATE SET timestamp = excluded.timestamp, derivative_key = excluded.derivative_key, sha256 = excluded.sha256, source_series = excluded.source_series`)
-      .bind(item.record_id, item.timestamp, key, item.sha256, item.source_series ?? null));
+      .bind(item.record_id, item.timestamp, key, item.sha256, item.source_series ?? null, reviewedLink ? "mapped" : "unreviewed", reviewedLink?.subjectId ?? null, reviewedLink?.relation ?? null, reviewedLink?.observation ?? null, reviewedLink ? "system.reviewed-seed" : null));
     imported += 1;
   }
   for (let index = 0; index < statements.length; index += 50) await db.batch(statements.slice(index, index + 50));
