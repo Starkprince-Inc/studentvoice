@@ -22,7 +22,7 @@ export default function EventPage() {
 
         <div className="shell case-layout">
           <nav className="case-index" aria-label="Case file sections">
-            <a href="#timeline">Timeline</a><a href="#claims">Claims</a><a href="#sources">Source register</a><a href="#identity">Identity policy</a><a href="#corrections">Corrections</a>
+            <a href="#timeline">Timeline</a><a href="#actors">Documented actors</a><a href="#claims">Claims</a><a href="#sources">Source register</a><a href="#identity">Identity policy</a><a href="#corrections">Corrections</a>
           </nav>
           <div>
             <section className="case-section" id="timeline">
@@ -36,6 +36,12 @@ export default function EventPage() {
                   </article>
                 ))}
               </div>
+            </section>
+
+            <section className="case-section" id="actors">
+              <p className="eyebrow">Actor and conduct review</p><h2>Anonymous profiles from the Samdish report</h2>
+              <div className="notice">Five timestamped review records now document uniformed personnel, riot-control activity, and an allegation involving people in civilian clothing. No face matching or identity inference is used.</div>
+              <Link className="button button-primary" href="/events/jantar-mantar-july-20/documented-actors">Open documented actors →</Link>
             </section>
 
             <section className="case-section" id="claims">

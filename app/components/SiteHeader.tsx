@@ -8,6 +8,7 @@ export function SiteHeader() {
         <Link className="brand" href="/" aria-label="StudentVoice home"><span className="brand-mark" aria-hidden="true" />STUDENTVOICE</Link>
         <nav className="main-nav" aria-label="Primary">
           <Link href="/events/jantar-mantar-july-20">Evidence</Link>
+          <Link href="/events/jantar-mantar-july-20/documented-actors">Actors</Link>
           <Link href="/methodology">Methodology</Link>
           <Link href="/methodology#safety">Source safety</Link>
         </nav>

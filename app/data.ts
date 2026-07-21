@@ -35,4 +35,80 @@ export const event = {
   ],
 };
 
+export type DocumentedActor = {
+  id: string;
+  observedRole: string;
+  identityState: "anonymous_subject" | "suggested_private" | "verified_private" | "approved_public" | "withdrawn";
+  reviewStatus: "unreviewed" | "under_review" | "corroborated" | "contested";
+  reviewApprovals: number;
+  timestampStart: string;
+  timestampEnd: string;
+  startSeconds: number;
+  action: string;
+  limits: string;
+};
+
+export const documentedActors: DocumentedActor[] = [
+  {
+    id: "SV-SAM-C01",
+    observedRole: "Person or people described as wearing civilian clothing",
+    identityState: "anonymous_subject",
+    reviewStatus: "unreviewed",
+    reviewApprovals: 0,
+    timestampStart: "00:52",
+    timestampEnd: "01:20",
+    startSeconds: 52,
+    action: "A protester alleges that people in civilian clothing used force before the full police deployment.",
+    limits: "This is an attributed allegation. The reviewed source does not establish the person’s identity, employer, or authority.",
+  },
+  {
+    id: "SV-SAM-U01",
+    observedRole: "Uniformed personnel during crowd dispersal",
+    identityState: "anonymous_subject",
+    reviewStatus: "under_review",
+    reviewApprovals: 0,
+    timestampStart: "14:18",
+    timestampEnd: "14:25",
+    startSeconds: 858,
+    action: "Footage appears to show baton use during a confrontation with protesters.",
+    limits: "No individual is named or linked to another clip. The necessity, sequence, and person responsible require frame-level review of an authorized original.",
+  },
+  {
+    id: "SV-SAM-U02",
+    observedRole: "Uniformed personnel near the media crew",
+    identityState: "anonymous_subject",
+    reviewStatus: "under_review",
+    reviewApprovals: 0,
+    timestampStart: "19:22",
+    timestampEnd: "19:32",
+    startSeconds: 1162,
+    action: "The reporter draws attention to personnel whose nameplates are not readable in the published footage.",
+    limits: "Absence of a readable nameplate in this view does not establish misconduct or a person’s identity.",
+  },
+  {
+    id: "SV-SAM-R01",
+    observedRole: "Riot-control personnel and equipment",
+    identityState: "anonymous_subject",
+    reviewStatus: "under_review",
+    reviewApprovals: 0,
+    timestampStart: "24:32",
+    timestampEnd: "26:07",
+    startSeconds: 1472,
+    action: "The report documents baton use, a Vajra riot-control vehicle, and apparent tear-gas deployment during dispersal.",
+    limits: "This record describes a scene, not a finding against a particular person. Individual responsibility has not been established.",
+  },
+  {
+    id: "SV-SAM-U03",
+    observedRole: "Uniformed personnel interacting with journalists",
+    identityState: "anonymous_subject",
+    reviewStatus: "under_review",
+    reviewApprovals: 0,
+    timestampStart: "45:10",
+    timestampEnd: "45:39",
+    startSeconds: 2710,
+    action: "The reporter attempts to ask personnel about operational protocol and receives no substantive on-camera explanation.",
+    limits: "The interaction is documented for accountability context; it is not categorized as violence and no identity is asserted.",
+  },
+];
+
 export function getSource(id: string) { return sources.find((source) => source.id === id); }

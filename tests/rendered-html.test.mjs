@@ -31,6 +31,19 @@ test("renders the case file with explicit uncertainty", async () => {
   assert.match(html, /corroborated/i);
   assert.match(html, /contested/i);
   assert.match(html, /No name from a face/i);
+  assert.match(html, /Open documented actors/i);
+});
+
+test("renders anonymous actor records without biometric identification", async () => {
+  const response = await render("/events/jantar-mantar-july-20/documented-actors");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /Documented actors/i);
+  assert.match(html, /SV-SAM-U01/i);
+  assert.match(html, /FRAME WITHHELD/i);
+  assert.match(html, /0 \/ 2 REVIEW APPROVALS/i);
+  assert.match(html, /face, resemblance, clothing, or crowd suggestion is never enough/i);
+  assert.doesNotMatch(html, /facial recognition enabled/i);
 });
 
 test("renders methodology and protected intake information", async () => {
