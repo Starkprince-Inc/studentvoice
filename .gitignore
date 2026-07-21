@@ -42,6 +42,7 @@ next-env.d.ts
 /.wrangler/
 /outputs/
 /work/
+/.site-package/
 
 # Python and evidence runtime state
 __pycache__/
