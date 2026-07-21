@@ -8,7 +8,7 @@ dependencies = ["blake3==1.0.5", "pydantic==2.11.7"]
 
 [project.optional-dependencies]
 analysis = ["faster-whisper==1.1.1", "paddleocr==3.1.0", "opencv-python-headless==4.12.0.88"]
-dev = ["pytest==8.4.1", "ruff==0.12.4"]
+dev = ["pytest==8.4.1", "ruff==0.15.22"]
 
 [project.scripts]
 studentvoice-worker = "studentvoice_worker.cli:main"
